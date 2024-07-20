@@ -18,9 +18,7 @@ const Navbar = () => {
 
     // LOGOUT FUNCTION
     const logout = () => {
-        const googleLogoutUrl = "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost:3000";
-        // window.open("http://localhost:6005/logout", "_self")
-        window.location.href = googleLogoutUrl;
+        window.open("http://localhost:6005/logout", "_self")
     }
     
 
@@ -32,7 +30,6 @@ const Navbar = () => {
         <>
             <header>
                 <nav>
-                    
                     <div className="right-side">
                         <ul>
                             <li>
