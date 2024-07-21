@@ -4,6 +4,8 @@ import axios from "axios"
 import {useNavigate} from "react-router-dom"
 import ClassForm from "./ClassForm";
 import DeadlinesForm from "./DeadlinesForm"
+import DisplayClass from "./DisplayClass"
+import DisplayDeadlines from "./DisplayDeadlines"
 
 const Dashboard = () => {
 
@@ -43,8 +45,7 @@ const Dashboard = () => {
                 <div>
                     <div>
                         <h2>Welcome, {userdata.displayName}</h2>
-                        {/* <ClassForm />
-                        <DeadlineForm /> */}
+                    
                         <button onClick={toggleDeadlineForm}>
                             {showDeadlineForm ? 'Hide Deadline Form' : 'Add Deadline'}
                         </button>
@@ -56,6 +57,15 @@ const Dashboard = () => {
 
                     {showDeadlineForm && <DeadlinesForm />}
                     {showClassForm && <ClassForm />}
+                    
+                    <div className="class-list-container"> 
+                        <DisplayClass /> 
+                    </div>
+
+                    <div className="deadlines-list-container">
+                        <DisplayDeadlines />
+                    </div>
+                    
                 </div>
             ) : (
                 <p>Loading...</p>

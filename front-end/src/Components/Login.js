@@ -9,7 +9,9 @@ const Login = () => {
 
     return (
         <div className="login-page">
+            <h1>Get studying</h1>
             <button className="login-with-google" onClick={loginWithGoogle}>
+                <img className="google-image" src="/images/google-symbol.png" alt="google-image" />
                 SIGN IN WITH GOOGLE
             </button>
         </div>

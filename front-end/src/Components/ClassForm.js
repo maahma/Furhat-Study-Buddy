@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useClassContext } from '../Hooks/useClassContext';
 
 const ClassForm = ({ user, setClasses }) => {
+    const { dispatch } = useClassContext();
+
     const [title, setTitle] = useState('')
     const [day, setDay] = useState('')
     const [startTime, setStartTime] = useState('')
@@ -32,7 +35,8 @@ const ClassForm = ({ user, setClasses }) => {
             setStartTime('')
             setEndTime('')
             setRepeat(false)
-            setError(null)        
+            setError(null)
+            dispatch({ type: 'CREATE_CLASS', payload: response.data });        
         
         } catch (error) {
             console.error('Error creating class:', error);

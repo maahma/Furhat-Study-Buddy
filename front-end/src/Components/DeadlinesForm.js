@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useDeadlineContext } from '../Hooks/useDeadlineContext';
+
 
 const DeadlinesForm = ({ user, setDeadlines }) => {
+    const { dispatch } = useDeadlineContext();
+
     const [title, setTitle] = useState('')
     const [dueDate, setdueDate] = useState('')
     const [error, setError] = useState(null)
@@ -24,6 +28,7 @@ const DeadlinesForm = ({ user, setDeadlines }) => {
             setTitle('')
             setdueDate('')
             setError(null)        
+            dispatch({ type: 'CREATE_DEADLINE', payload: response.data }); 
         
         } catch (error) {
             console.error('Error creating deadline:', error);

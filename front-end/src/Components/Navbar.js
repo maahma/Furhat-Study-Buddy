@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../style/navbar.css";
 import {NavLink} from "react-router-dom";
-import axios from "axios"
+import axios from "axios";
 
 const Navbar = () => {
     const [userdata, setUserData] = useState({});
@@ -30,37 +30,51 @@ const Navbar = () => {
         <>
             <header>
                 <nav>
+                    <div className="left-side">
+                        Furhat Study Buddy
+                    </div>
                     <div className="right-side">
                         <ul>
-                            <li>
+                            <li className="home">
                                 <NavLink to="/">
-                                    Home
+                                    <img className="home-image" src="/images/home.png" alt="home-image" />
                                 </NavLink>
                             </li>
                             {
                                 Object?.keys(userdata)?.length > 0 ? (
                                     <>
-                                        <li className="user-name">
-                                            {userdata?.displayName}
-                                        </li>
-                                        <li>
+                                    
+                                        <li className="dashboard">
                                             <NavLink to="/dashboard">
-                                                Dashboard
+                                                <img className="dashboard-image" src="/images/calendar.png" alt="dashboard-image" />
                                             </NavLink>
                                         </li>
 
-                                        <li>
-                                            <img src={userdata?.image} alt="user-image" />
+                                        <li className="logout" onClick={logout}>
+                                            <img className="logout-image" src="/images/logout.png" alt="logout-image" />
                                         </li>
 
-                                        <li onClick={logout}>
-                                            Logout
+
+                                        <li className="user-details">
+                                            <div className="user-image">
+                                                <img src={userdata?.image} alt="user-image" />
+                                            </div>
+                                            <div className="user-name">
+                                                <span>{userdata?.displayName}</span>
+                                            </div>
+
                                         </li>
+
+                                        {/* <li className="user-name">
+                                            {userdata?.displayName}
+                                        </li> */}
+
+                                        
                                     </>
                                 )   : 
                                 <li>
                                     <NavLink to="/login">
-                                        Login
+                                        <img className="login-image" src="/images/logout.png" alt="login-image" />
                                     </NavLink>
                                 </li>
                             }
