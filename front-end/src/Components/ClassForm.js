@@ -6,7 +6,7 @@ const ClassForm = ({ user, setClasses }) => {
     const { dispatch } = useClassContext();
 
     const [title, setTitle] = useState('')
-    const [day, setDay] = useState('')
+    const [date, setDate] = useState('')
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [repeat, setRepeat] = useState(false)
@@ -17,7 +17,7 @@ const ClassForm = ({ user, setClasses }) => {
 
         const classItem = {
             title,
-            day,
+            date,
             starttime: startTime,
             endtime: endTime,
             repeat
@@ -31,7 +31,7 @@ const ClassForm = ({ user, setClasses }) => {
             
             // RESET THE FORM IF THE CLASS WAS ADDED 
             setTitle('')
-            setDay('')
+            setDate('')
             setStartTime('')
             setEndTime('')
             setRepeat(false)
@@ -55,17 +55,15 @@ const ClassForm = ({ user, setClasses }) => {
                 </div>
 
                 <div className="form-group">
-                    <label>Day</label>
-                    <select value={day} onChange={(e) => setDay(e.target.value)} required>
-                        <option value="">Select Day</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                    </select>
+                    <label>Date</label>
+                    <input 
+                        type="date" 
+                        id="date" 
+                        name="date" 
+                        value={date} 
+                        onChange={(e) => setDate(e.target.value)} 
+                        required 
+                    />
                 </div>
 
                 <div className="form-group">
@@ -74,12 +72,12 @@ const ClassForm = ({ user, setClasses }) => {
                 </div>
 
                 <div className="form-group">
-                    <label>End Time:</label>
+                    <label>End Time</label>
                     <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
                 </div>
 
                 <div className="form-group">
-                    <label>Repeat:</label>
+                    <label>Repeat every week</label>
                     <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
                 </div>
 

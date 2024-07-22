@@ -11,6 +11,10 @@ const Navbar = () => {
         try {
             const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
             setUserData(response.data.user)
+
+            if(!response.data.user.image){
+                console.log("NO USER IMAGE SET")
+            }
         } catch (error) {
             console.log("Error getting a response: ", error)
         }
@@ -31,7 +35,7 @@ const Navbar = () => {
             <header>
                 <nav>
                     <div className="left-side">
-                        Furhat Study Buddy
+                        RORY
                     </div>
                     <div className="right-side">
                         <ul>

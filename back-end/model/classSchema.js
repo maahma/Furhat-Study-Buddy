@@ -6,9 +6,15 @@ const classSchema = new mongoose.Schema({
         required: true
     },
 
-    day: {
-        type: String,
-        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    // day: {
+    //     type: String,
+    //     enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    //     required: true
+    // },
+
+    // Remove the day field and replace it with date
+    date: {
+        type: Date,  // Use Date type to store the specific date
         required: true
     },
 

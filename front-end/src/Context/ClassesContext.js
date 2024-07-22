@@ -25,6 +25,10 @@ export const classesReducer = (state, action) => {
           classItem._id === action.payload._id ? action.payload : classItem
         )
       };
+    case 'ADD_REPEATED_CLASSES':
+      return {
+        classes: [...state.classes, ...action.payload]
+      };
     default:
       return state;
   }

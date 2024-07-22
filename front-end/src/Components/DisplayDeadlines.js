@@ -1,4 +1,5 @@
 import { useDeadlineContext } from '../Hooks/useDeadlineContext';
+import "../style/deadlinesList.css";
 
 const DisplayDeadline = ({deadlineItem}) => {
     const { deadlines } = useDeadlineContext();

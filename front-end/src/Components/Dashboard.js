@@ -6,6 +6,8 @@ import ClassForm from "./ClassForm";
 import DeadlinesForm from "./DeadlinesForm"
 import DisplayClass from "./DisplayClass"
 import DisplayDeadlines from "./DisplayDeadlines"
+import WeeklyCalendar from "./WeeklyCalendar"
+
 
 const Dashboard = () => {
 
@@ -58,9 +60,14 @@ const Dashboard = () => {
                     {showDeadlineForm && <DeadlinesForm />}
                     {showClassForm && <ClassForm />}
                     
-                    <div className="class-list-container"> 
+                    {/* <div className="class-list-container"> 
                         <DisplayClass /> 
+                    </div> */}
+
+                    <div className="calendar-container">
+                        <WeeklyCalendar />
                     </div>
+
 
                     <div className="deadlines-list-container">
                         <DisplayDeadlines />

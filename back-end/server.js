@@ -149,9 +149,27 @@ app.get("/api/classes", async (req, res) => {
 
 // CREATE A CLASS
 app.post("/api/classes", async (req, res) => {
-    const { title, day, starttime, endtime, repeat } = req.body;
+    const { title, date, starttime, endtime, repeat } = req.body;
     try {
-        const classItem = await Class.create({ title, day, starttime, endtime, repeat, user: userId });
+        const classItem = await Class.create({ title, date, starttime, endtime, repeat, user: userId });
+        
+        if (repeat) {
+            // Add the class to the next weeks
+            const classDate = new Date(date);
+            for (let i = 1; i <= 10; i++) {  // Repeat for the next 10 weeks
+                classDate.setDate(classDate.getDate() + 7);
+                const repeatedClass = new Class({ 
+                    title, 
+                    date: classDate.toISOString(), 
+                    starttime, 
+                    endtime, 
+                    repeat, 
+                    user: userId 
+                });
+                await repeatedClass.save();
+            }
+        }
+        
         console.log("NEW CLASS POSTED");
         res.status(200).json(classItem);
     } catch (error) {
@@ -182,11 +200,11 @@ app.delete("/api/classes/:id", async (req, res) => {
 app.patch("/api/classes/:id", async (req, res) => {
 
     const { id } = req.params;
-    const { title, day, starttime, endtime, repeat } = req.body;
+    const { title, date, starttime, endtime, repeat } = req.body;
     try {
         const classItem = await Class.findOneAndUpdate(
             { _id: id, user: userId },
-            { title, day, starttime, endtime, repeat },
+            { title, date, starttime, endtime, repeat },
             { new: true }
         );
         if (!classItem) {
@@ -200,6 +218,23 @@ app.patch("/api/classes/:id", async (req, res) => {
     }
 });
 
+// GET CLASSES FOR THE WEEK
+app.get("/api/classes", async (req, res) => {
+    // console.log("INSIDE GET DATES REQUEST IN SERVER JS")
+    const { startDate, endDate } = req.query;
+
+    // console.log(`Received startDate: ${startDate}, endDate: ${endDate}`);
+
+    try {
+        const classes = await Class.find({
+            date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        }).populate('user');
+
+        res.status(200).json(classes);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+})
 
 // -------------------------------- DEADLINES ROUTES --------------------------------
 // GET DEADLINES FOR THE USER
