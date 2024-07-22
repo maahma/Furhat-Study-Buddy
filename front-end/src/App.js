@@ -1,4 +1,3 @@
-import './App.css';
 import {Routes, Route} from "react-router-dom"
 import Dashboard from "./Components/Dashboard"
 import Login from "./Components/Login"
@@ -7,13 +6,13 @@ import Home from './Components/Home';
 import Error from './Components/Error';
 import { ClassesContextProvider } from './Context/ClassesContext';
 import { DeadlinesContextProvider } from './Context/DeadlinesContext';
-
+import "./style/app.css"
 
 function App() {
   return (
     <ClassesContextProvider>
       <DeadlinesContextProvider>
-      <div>
+      <div className="app-container">
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

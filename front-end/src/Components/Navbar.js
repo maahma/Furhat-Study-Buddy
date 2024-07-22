@@ -54,6 +54,12 @@ const Navbar = () => {
                                             </NavLink>
                                         </li>
 
+                                        <li className="pomodoro">
+                                            <NavLink to="/pomodoro">
+                                                <img className="pomodoro-image" src="/images/pomodoro.png" alt="pomodoro-image" />
+                                            </NavLink>
+                                        </li>
+
                                         <li className="logout" onClick={logout}>
                                             <img className="logout-image" src="/images/logout.png" alt="logout-image" />
                                         </li>

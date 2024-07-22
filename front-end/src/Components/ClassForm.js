@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useClassContext } from '../Hooks/useClassContext';
+import "../style/classForm.css"
 
 const ClassForm = ({ user, setClasses }) => {
     const { dispatch } = useClassContext();

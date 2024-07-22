@@ -8,7 +8,6 @@ import DisplayClass from "./DisplayClass"
 import DisplayDeadlines from "./DisplayDeadlines"
 import WeeklyCalendar from "./WeeklyCalendar"
 
-
 const Dashboard = () => {
 
     const navigate = useNavigate();
@@ -41,20 +40,23 @@ const Dashboard = () => {
       };
 
     return (
-        <div>
-            <h1>Dashboard</h1>
+        <div className="dashboard-container">
+            {/* <h1>Dashboard</h1> */}
             {Object.keys(userdata).length > 0 ? (
-                <div>
-                    <div>
-                        <h2>Welcome, {userdata.displayName}</h2>
+                <div className="some-container">
+                    <div className="heading">
+                        <h2 className="greetings-user">Welcome, {userdata.displayName}</h2>
                     
-                        <button onClick={toggleDeadlineForm}>
-                            {showDeadlineForm ? 'Hide Deadline Form' : 'Add Deadline'}
-                        </button>
+                        <div className="button-group">
+                            <button className="class-button" onClick={toggleClassForm}>
+                                {showClassForm ? 'Hide Class Form' : 'Add Class'}
+                            </button>
 
-                        <button onClick={toggleClassForm}>
-                            {showClassForm ? 'Hide Class Form' : 'Add Class'}
-                        </button>
+                            <button className="deadlines-button" onClick={toggleDeadlineForm}>
+                                {showDeadlineForm ? 'Hide Deadline Form' : 'Add Deadline'}
+                            </button>
+                        </div>
+
                     </div>
 
                     {showDeadlineForm && <DeadlinesForm />}
@@ -64,13 +66,15 @@ const Dashboard = () => {
                         <DisplayClass /> 
                     </div> */}
 
-                    <div className="calendar-container">
-                        <WeeklyCalendar />
-                    </div>
+                    <div className="class-deadlines-container">
+                        <div className="calendar-container">
+                            <WeeklyCalendar />
+                        </div>
 
 
-                    <div className="deadlines-list-container">
-                        <DisplayDeadlines />
+                        <div className="deadlines-list-container">
+                            <DisplayDeadlines />
+                        </div>
                     </div>
                     
                 </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useDeadlineContext } from '../Hooks/useDeadlineContext';
-
+import "../style/deadlineForm.css"
 
 const DeadlinesForm = ({ user, setDeadlines }) => {
     const { dispatch } = useDeadlineContext();

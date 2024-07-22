@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { format, startOfWeek, addWeeks, subWeeks, eachDayOfInterval, endOfWeek, startOfDay } from 'date-fns';
 import axios from 'axios';
 import { ClassesContext } from '../Context/ClassesContext';
+import "../style/weeklyCalendar.css";
 
 const Calendar = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -53,11 +54,12 @@ const Calendar = () => {
   };
 
   return (
-    <div>
+    <>
+    {/* <div className="calendar-container"> */}
       <div className="calendar-header">
-        <button onClick={handlePreviousWeek}>Previous Week</button>
-        <h2>{format(weekStart, 'MMMM yyyy')}</h2>
-        <button onClick={handleNextWeek}>Next Week</button>
+        <button className="previous-week" onClick={handlePreviousWeek}><img src="/images/left-arrow.png" alt="left-arrow" /></button>
+        <h2 className='calendar-date'>{format(weekStart, 'MMMM yyyy')}</h2>
+        <button className="next-week" onClick={handleNextWeek}><img src="/images/right-arrow.png" alt="left-arrow" /></button>
       </div>
       <div className="calendar-grid">
         {weekDays.map((day) => {
@@ -74,16 +76,20 @@ const Calendar = () => {
               return classDate.toDateString() === day.toDateString();
             }
           );
-          console.log("dayClasses: ", dayClasses)
+          // console.log("dayClasses: ", dayClasses)
+          
           return (
             <div key={day.toDateString()} className="calendar-day">
               <h3>{format(day, 'EEE d')}</h3>
               {dayClasses.length ? (
                 dayClasses.map((classItem) => (
                   <div key={classItem._id} className="class-item">
-                    <h4>{classItem.title}</h4>
-                    <p><strong>Start Time:</strong> {classItem.starttime}</p>
-                    <p><strong>End Time:</strong> {classItem.endtime}</p>
+                    <div className="class-title">
+                      <h4>{classItem.title}</h4>
+                    </div>
+                    <div className="class-time">
+                      <p>{classItem.starttime} - {classItem.endtime}</p>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -93,7 +99,8 @@ const Calendar = () => {
           );
         })}
       </div>
-    </div>
+    {/* </div> */}
+    </>
   );
 };
 

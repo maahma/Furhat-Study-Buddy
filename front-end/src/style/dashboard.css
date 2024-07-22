@@ -1,0 +1,34 @@
+.dashboard-container{
+    background-color: #f3f6fd;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.heading{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+.class-button, .deadlines-button{
+    font-family: 'DM Sans', sans-serif;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    float:right;
+    border-radius: 10px;
+    margin-left:20px;
+}
+
+.class-deadlines-container{
+    display: flex;
+    justify-content: space-between;
+    gap:40px;
+    margin: 20px;
+}
+
+.calendar-container, .deadlines-list-container{
+    flex:1;
+}
