@@ -55,7 +55,7 @@ const Navbar = () => {
                                         </li>
 
                                         <li className="pomodoro">
-                                            <NavLink to="/pomodoro">
+                                            <NavLink to="/schedule">
                                                 <img className="pomodoro-image" src="/images/pomodoro.png" alt="pomodoro-image" />
                                             </NavLink>
                                         </li>
@@ -73,13 +73,7 @@ const Navbar = () => {
                                                 <span>{userdata?.displayName}</span>
                                             </div>
 
-                                        </li>
-
-                                        {/* <li className="user-name">
-                                            {userdata?.displayName}
-                                        </li> */}
-
-                                        
+                                        </li>                                        
                                     </>
                                 )   : 
                                 <li>

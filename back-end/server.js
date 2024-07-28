@@ -7,9 +7,10 @@ const session = require("express-session");
 const passport = require("passport");
 const OAuth2Strategy = require("passport-google-oauth2").Strategy;
 const userdb = require("./model/userSchema")
-
 const Class = require("./model/classSchema");
 const Deadlines = require("./model/deadlinesSchema");
+const Preferences = require("./model/preferencesSchema")
+const { OpenAI } = require('openai');
 
 let userId = ""
 
@@ -77,11 +78,6 @@ passport.deserializeUser((user, done) => {
 // SETUP GOOGLE AUTH LOGIN USING PASSPORT
 app.get("/auth/google", passport.authenticate("google", {scope: ["profile", "email"]}));
 
-// app.get("/auth/google/callback", passport.authenticate("google", {
-//     successRedirect: "http://localhost:3000/dashboard",
-//     failureRedirect: "http://localhost:3000/login"
-// }));   // calling from front end
-
 app.get("/auth/google/callback", (req, res, next) => {
     passport.authenticate("google", (err, user, info) => {
         if (err) {
@@ -126,11 +122,6 @@ app.get("/logout", (req, res, next) => {
         }
     });
 });
-
-// Use class routes
-// app.use("/api/classes", classRoutes);
-
-
 
 // -------------------------------- CLASS ROUTES --------------------------------
 // GET CLASSES FOR THE USER
@@ -235,6 +226,8 @@ app.get("/api/classes", async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 })
+// ----------------------------------------------------------------------------------
+
 
 // -------------------------------- DEADLINES ROUTES --------------------------------
 // GET DEADLINES FOR THE USER
@@ -303,6 +296,145 @@ app.patch("/api/deadlines/:id", async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+// ----------------------------------------------------------------------------------
+
+
+// -------------------------------- PREFERENCES ROUTE --------------------------------
+// CREATE A PREFERENCE
+app.post("/api/preferences", async (req, res) => {
+    try {
+        const { studyHoursPerDay, pomodoroDuration, breakDuration } = req.body;
+
+        // Validate request body
+        if (!userId || !studyHoursPerDay || !pomodoroDuration || !breakDuration) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        const preferenceItem = await Preferences.create({ userId, studyHoursPerDay, pomodoroDuration, breakDuration });
+        console.log("NEW PREFERENCE POSTED");
+        res.status(200).json(preferenceItem);
+    } catch (error) {
+        console.log("ERROR POSTING A NEW PREFERENCE");
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// UPDATE A PREFERENCE
+app.patch("/api/preferences/:id", async (req, res) => {
+
+    const { id } = req.params;
+    const { dueDatestudyHoursPerDay, pomodoroDuration, breakDuration } = req.body;
+    try {
+        const preferenceItem = await Preferences.findOneAndUpdate(
+            { _id: id, userId: userId },
+            { dueDatestudyHoursPerDay, pomodoroDuration, breakDuration },
+            { new: true }
+        );
+        if (!preferenceItem) {
+            return res.status(404).json({ error: "Preference not found or you do not have permission to update this preference." });
+        }
+        console.log("PREFERENCE UPDATED");
+        res.status(200).json(preferenceItem);
+    } catch (error) {
+        console.log("ERROR UPDATING PREFERENCE");
+        res.status(400).json({ error: error.message });
+    }
+});
+// ----------------------------------------------------------------------------------
+
+
+// -------------------------------- SCHEDULE ROUTE --------------------------------
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY 
+  });
+
+async function generateSchedule(userPreferences, classes, deadlines) {
+    const messages = [
+        {
+            role: "system", content: "You are a helpful assistant for generating study schedules."
+        },
+        {   role: "user", content: `
+            Generate a study schedule based on the following preferences, classes, and deadlines:
+
+            **Rules:**
+            1. Use only the provided classes, deadlines, and user preferences.
+            2. Prioritize subjects with nearest deadlines.
+            3. Include short breaks every hour and a longer break after 4 hours of study.
+            4. Avoid scheduling study sessions during class times.
+
+            **Preferences:**
+            - Study hours per day: ${userPreferences.studyHoursPerDay}
+            - Pomodoro duration (minutes): ${userPreferences.pomodoroDuration}
+            - Short break duration (minutes): ${userPreferences.breakDuration.short}
+            - Long break duration (minutes): ${userPreferences.breakDuration.long}
+
+            **Classes:**
+            ${classes.map(c => `- ${c.title} on ${c.date} from ${c.starttime} to ${c.endtime}`).join("\n")}
+
+            **Deadlines:**
+            ${deadlines.map(d => `- ${d.title} due on ${d.dueDate}`).join("\n")}
+
+            Create a study schedule that:
+            - Adheres to the above rules.
+            - Ensures all deadlines are met.
+            - Considers the user preferences for study and break durations.
+            - Avoids overlap with class times.
+
+            Format the schedule with the following details for each day:
+            - Time slots
+            - Activity type (study, break, class, deadline)
+            - Duration of each activity
+            - Any additional notes or considerations.
+            `
+        }
+    ]
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: messages,
+            max_tokens: 500,
+            temperature: 0.5,
+        });
+
+        const schedule = response.choices[0].message.content;
+        console.log("SCHEDULE GENERATED: ", schedule);
+        return schedule;
+    } catch (error) {
+        console.error("Error generating schedule:", error);
+        throw new Error("Failed to generate schedule");
+    }
+}
+
+app.post('/api/schedule', async (req, res) => {
+    try {
+        console.log("USER ID INSIDE POST OPEN API : ", userId)
+        // Fetch user preferences
+        const preferences = await Preferences.findOne({ userId });
+        if (!preferences) {
+            return res.status(404).json({ message: "Preferences not found" });
+        }
+
+        console.log("PREFERENCES FOUND : ", preferences)
+
+        // Fetch classes and deadlines
+        const classes = await Class.find({ user: userId });
+        const deadlines = await Deadlines.find({ user: userId });
+        
+        console.log("CLASSES FOUND : ", classes)
+        console.log("DEADLINES FOUND : ", deadlines)
+
+        // Generate the schedule using OpenAI
+        const schedule = await generateSchedule(preferences, classes, deadlines);
+
+        console.log("SCHEDULE GENERATED: ", schedule)
+
+        res.status(200).json({ schedule });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+// ----------------------------------------------------------------------------------
 
 app.listen(process.env.PORT, () => {
     console.log("Connected to MongoDB and listening on port", process.env.PORT);
