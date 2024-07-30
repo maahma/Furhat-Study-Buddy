@@ -4,7 +4,9 @@ import Login from "./Components/Login"
 import Navbar from './Components/Navbar';
 import Home from './Components/Home';
 import Error from './Components/Error';
-import GenerateSchedule from './Components/GenerateSchedule'
+import Quiz from './Components/Quiz';
+import GenerateSchedule from './Components/GenerateSchedule';
+import PomodoroFocus from './Components/PomodoroFocus';
 import { ClassesContextProvider } from './Context/ClassesContext';
 import { DeadlinesContextProvider } from './Context/DeadlinesContext';
 import "./style/app.css"
@@ -22,7 +24,9 @@ function App() {
 
           <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route path="/schedule" element={<GenerateSchedule />} />
+          <Route path='/pomodoroFocus' element={<PomodoroFocus />} />
+
+          <Route path="/quiz" element={<Quiz />} />
 
           <Route path='*' element={<Error />} />
 

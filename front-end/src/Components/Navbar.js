@@ -55,8 +55,14 @@ const Navbar = () => {
                                         </li>
 
                                         <li className="pomodoro">
-                                            <NavLink to="/schedule">
+                                            <NavLink to="/pomodoroFocus">
                                                 <img className="pomodoro-image" src="/images/pomodoro.png" alt="pomodoro-image" />
+                                            </NavLink>
+                                        </li>
+
+                                        <li className="quiz">
+                                            <NavLink to="/quiz">
+                                                <img className="quiz-image" src="/images/quiz.png" alt="quiz-image" />
                                             </NavLink>
                                         </li>
 

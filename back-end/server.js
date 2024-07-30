@@ -10,6 +10,7 @@ const userdb = require("./model/userSchema")
 const Class = require("./model/classSchema");
 const Deadlines = require("./model/deadlinesSchema");
 const Preferences = require("./model/preferencesSchema")
+const StudyPlan = require("./model/studyPlanSchema")
 const { OpenAI } = require('openai');
 
 let userId = ""
@@ -90,7 +91,7 @@ app.get("/auth/google/callback", (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            // Save the session before redirecting
+
             req.session.save((err) => {
                 if (err) {
                     return next(err);
@@ -130,7 +131,6 @@ app.get("/api/classes", async (req, res) => {
     try{
         const classes = await Class.find({ user: userId });
 
-        // Send the classes as a response
         res.status(200).json(classes);
     } catch (error) {
         console.error('Error getting classes:', error);
@@ -145,7 +145,6 @@ app.post("/api/classes", async (req, res) => {
         const classItem = await Class.create({ title, date, starttime, endtime, repeat, user: userId });
         
         if (repeat) {
-            // Add the class to the next weeks
             const classDate = new Date(date);
             for (let i = 1; i <= 10; i++) {  // Repeat for the next 10 weeks
                 classDate.setDate(classDate.getDate() + 7);
@@ -211,7 +210,6 @@ app.patch("/api/classes/:id", async (req, res) => {
 
 // GET CLASSES FOR THE WEEK
 app.get("/api/classes", async (req, res) => {
-    // console.log("INSIDE GET DATES REQUEST IN SERVER JS")
     const { startDate, endDate } = req.query;
 
     // console.log(`Received startDate: ${startDate}, endDate: ${endDate}`);
@@ -235,8 +233,6 @@ app.get("/api/deadlines", async (req, res) => {
     console.log("REQ USER ID IS: ", userId);
     try{
         const deadlines = await Deadlines.find({ user: userId });
-
-        // Send the deadlines as a response
         res.status(200).json(deadlines);
     } catch (error) {
         console.error('Error getting deadlines:', error);
@@ -301,72 +297,102 @@ app.patch("/api/deadlines/:id", async (req, res) => {
 
 // -------------------------------- PREFERENCES ROUTE --------------------------------
 // CREATE A PREFERENCE
-app.post("/api/preferences", async (req, res) => {
-    try {
-        const { studyHoursPerDay, pomodoroDuration, breakDuration } = req.body;
+// app.post("/api/preferences", async (req, res) => {
+//     try {
+//         const { studyHoursPerDay, pomodoroDuration, breakDuration } = req.body;
 
-        // Validate request body
-        if (!userId || !studyHoursPerDay || !pomodoroDuration || !breakDuration) {
-            return res.status(400).json({ message: 'All fields are required' });
-        }
+//         // Validate request body
+//         if (!userId || !studyHoursPerDay || !pomodoroDuration || !breakDuration) {
+//             return res.status(400).json({ message: 'All fields are required' });
+//         }
 
-        const preferenceItem = await Preferences.create({ userId, studyHoursPerDay, pomodoroDuration, breakDuration });
-        console.log("NEW PREFERENCE POSTED");
-        res.status(200).json(preferenceItem);
-    } catch (error) {
-        console.log("ERROR POSTING A NEW PREFERENCE");
-        res.status(400).json({ error: error.message });
-    }
-});
+//         const preferenceItem = await Preferences.create({ userId, studyHoursPerDay, pomodoroDuration, breakDuration });
+//         console.log("NEW PREFERENCE POSTED");
+//         res.status(200).json(preferenceItem);
+//     } catch (error) {
+//         console.log("ERROR POSTING A NEW PREFERENCE");
+//         res.status(400).json({ error: error.message });
+//     }
+// });
 
-// UPDATE A PREFERENCE
-app.patch("/api/preferences/:id", async (req, res) => {
+// // UPDATE A PREFERENCE
+// app.patch("/api/preferences/:id", async (req, res) => {
 
-    const { id } = req.params;
-    const { dueDatestudyHoursPerDay, pomodoroDuration, breakDuration } = req.body;
-    try {
-        const preferenceItem = await Preferences.findOneAndUpdate(
-            { _id: id, userId: userId },
-            { dueDatestudyHoursPerDay, pomodoroDuration, breakDuration },
-            { new: true }
-        );
-        if (!preferenceItem) {
-            return res.status(404).json({ error: "Preference not found or you do not have permission to update this preference." });
-        }
-        console.log("PREFERENCE UPDATED");
-        res.status(200).json(preferenceItem);
-    } catch (error) {
-        console.log("ERROR UPDATING PREFERENCE");
-        res.status(400).json({ error: error.message });
-    }
-});
+//     const { id } = req.params;
+//     const { dueDatestudyHoursPerDay, pomodoroDuration, breakDuration } = req.body;
+//     try {
+//         const preferenceItem = await Preferences.findOneAndUpdate(
+//             { _id: id, userId: userId },
+//             { dueDatestudyHoursPerDay, pomodoroDuration, breakDuration },
+//             { new: true }
+//         );
+//         if (!preferenceItem) {
+//             return res.status(404).json({ error: "Preference not found or you do not have permission to update this preference." });
+//         }
+//         console.log("PREFERENCE UPDATED");
+//         res.status(200).json(preferenceItem);
+//     } catch (error) {
+//         console.log("ERROR UPDATING PREFERENCE");
+//         res.status(400).json({ error: error.message });
+//     }
+// });
 // ----------------------------------------------------------------------------------
 
 
-// -------------------------------- SCHEDULE ROUTE --------------------------------
+// -------------------------------- STUDY PLAN ROUTE --------------------------------
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY 
   });
 
-async function generateSchedule(userPreferences, classes, deadlines) {
+const getStartAndEndOfNext7Days = () => {
+    const today = new Date();
+    const startDate = today;
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + 6); // +6 days to cover a full week
+
+    return { startDate, endDate };
+};
+
+const getNext7DaysData = async () => {
+    const { startDate, endDate } = getStartAndEndOfNext7Days();
+    console.log("START DATE: ", startDate)
+    console.log("END DATE: ", endDate)
+
+    try {
+        const startOfDay = new Date(new Date(startDate).setUTCHours(0, 0, 0, 0));
+        const endOfDay = new Date(new Date(endDate).setUTCHours(23, 59, 59, 999));
+
+        const classes = await Class.find({
+            date: { $gte: startOfDay, $lte: endOfDay }
+        }).exec();
+
+        classes.sort((a, b) => {
+            const dateA = new Date(`${a.date.toISOString().split('T')[0]}T${a.starttime}:00`);
+            const dateB = new Date(`${b.date.toISOString().split('T')[0]}T${b.starttime}:00`);
+            return dateA - dateB;
+        });
+
+        return { classes };
+    } catch (error) {
+        console.error('Error fetching data for the next 7 days:', error);
+        throw error;
+    }
+};
+
+async function generateSchedule(classes, deadlines) {
     const messages = [
         {
-            role: "system", content: "You are a helpful assistant for generating study schedules."
+            role: "system", content: "You are a helpful assistant for scheduling study hours and tasks."
         },
         {   role: "user", content: `
-            Generate a study schedule based on the following preferences, classes, and deadlines:
-
-            **Rules:**
-            1. Use only the provided classes, deadlines, and user preferences.
-            2. Prioritize subjects with nearest deadlines.
-            3. Include short breaks every hour and a longer break after 4 hours of study.
-            4. Avoid scheduling study sessions during class times.
+            Based on the class schedule and deadlines provided, create a study schedule with specific study hours and to-do lists for each session in the following format :
+            
+            ### **[Day of the week], [Month] [Day], [Year]**
+                - **[Start Time] - [End Time]**: Study Session
+                  - **To-Do List**: [Specific task for this session]
 
             **Preferences:**
-            - Study hours per day: ${userPreferences.studyHoursPerDay}
-            - Pomodoro duration (minutes): ${userPreferences.pomodoroDuration}
-            - Short break duration (minutes): ${userPreferences.breakDuration.short}
-            - Long break duration (minutes): ${userPreferences.breakDuration.long}
+            - 5 study sessions every day with 4 sessions for daily work (lecture notes, lab work, tutorial work) and 1 session for assignment work
 
             **Classes:**
             ${classes.map(c => `- ${c.title} on ${c.date} from ${c.starttime} to ${c.endtime}`).join("\n")}
@@ -374,31 +400,27 @@ async function generateSchedule(userPreferences, classes, deadlines) {
             **Deadlines:**
             ${deadlines.map(d => `- ${d.title} due on ${d.dueDate}`).join("\n")}
 
-            Create a study schedule that:
-            - Adheres to the above rules.
-            - Ensures all deadlines are met.
-            - Considers the user preferences for study and break durations.
-            - Avoids overlap with class times.
-
-            Format the schedule with the following details for each day:
-            - Time slots
-            - Activity type (study, break, class, deadline)
-            - Duration of each activity
-            - Any additional notes or considerations.
+            **Format:**
+            - Only provide day, date, time, title of task, and to-do list for each study session.
+            - Avoid using session titles like "Morning Session" or "Afternoon Session".
+            - List specific study hours for each day with date, avoiding overlap with classes and ensuring ensuring a buffer period of 30 minutes before and after each class to prevent scheduling study sessions too closely to class times.
+            - Do not schedule study sessions during class times.
+            - Space study sessions evenly throughout the day, ensuring a mix of morning and afternoon sessions (e.g., 3 in the morning, 2 in the afternoon) to prevent burnout and maintain energy levels.
+            - Include a to-do list for each study session, specifying tasks like reviewing lecture notes, lab work, tutorial work, and assignments. Ensure variety in the tasks to cover all necessary activities.
+            - Include realistic breaks between sessions, especially around lunch and dinner times, and ensure that there is time for rest and other activities.
             `
         }
     ]
 
     try {
         const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
             messages: messages,
-            max_tokens: 500,
+            max_tokens: 1400,
             temperature: 0.5,
         });
 
         const schedule = response.choices[0].message.content;
-        console.log("SCHEDULE GENERATED: ", schedule);
         return schedule;
     } catch (error) {
         console.error("Error generating schedule:", error);
@@ -406,31 +428,117 @@ async function generateSchedule(userPreferences, classes, deadlines) {
     }
 }
 
-app.post('/api/schedule', async (req, res) => {
-    try {
-        console.log("USER ID INSIDE POST OPEN API : ", userId)
-        // Fetch user preferences
-        const preferences = await Preferences.findOne({ userId });
-        if (!preferences) {
-            return res.status(404).json({ message: "Preferences not found" });
+const parseSchedule = (originalText) => {
+    let splitOriginalText = originalText.split(/\n(?=### \*\*)/);
+
+    // splitOriginalText = splitOriginalText.slice(1);
+
+    const finalSchedule = [];
+
+    splitOriginalText.forEach((element) => {
+        const text = element;
+
+        const sessions = text.split(/-\s\*\*/).filter(session => session.trim().length > 0);
+        const cleanedSessions = sessions.map(session => `- **${session.trim()}`);
+
+        // Regex patterns to get data from the generated text 
+        const datePattern = /### \*\*(.*?)\*\*/;
+        const timePattern = /-\s\*\*(\d{2}:\d{2}) - (\d{2}:\d{2})\*\*/;
+        const taskPattern = /- \*\*To-Do List\*\*:\s(.*)/;
+
+        // Extract the date
+        const dateMatch = cleanedSessions[0].match(datePattern);
+        const dateStr = dateMatch ? dateMatch[1] : null;
+
+        if (!dateStr) return; // Skip if date is not found
+        const date = new Date(dateStr);
+
+        // Prepare arrays to hold sessions' data
+        const sessionsData = [];
+
+        let currentSession = {};
+        for (let i = 1; i < cleanedSessions.length; i++) {
+            const sessionText = cleanedSessions[i];
+
+            if (timePattern.test(sessionText)) {
+                const timeMatch = sessionText.match(timePattern);
+                currentSession = {
+                    startTime: timeMatch[1],
+                    endTime: timeMatch[2],
+                    task: ''
+                };
+                sessionsData.push(currentSession);
+            } else if (taskPattern.test(sessionText)) {
+                const taskMatch = sessionText.match(taskPattern);
+                if (currentSession) {
+                    currentSession.task = taskMatch[1].trim();
+                }
+            }
         }
 
-        console.log("PREFERENCES FOUND : ", preferences)
+        finalSchedule.push({
+            date: date.toDateString(),
+            sessions: sessionsData
+        });
+    });
 
-        // Fetch classes and deadlines
-        const classes = await Class.find({ user: userId });
+    console.log("FINAL SCHEDULE")
+    console.log(JSON.stringify(finalSchedule, null, 2));
+    return finalSchedule;
+};
+
+app.post('/api/studyPlan', async (req, res) => {
+    try {
+        console.log("USER ID INSIDE POST OPEN API : ", userId)
+
+        // Fetch user preferences
+        // const preferences = await Preferences.findOne({ userId });
+        // if (!preferences) {
+        //     return res.status(404).json({ message: "Preferences not found" });
+        // }
+
+        // console.log("PREFERENCES FOUND : ", preferences)
+
+        const { classes } = await getNext7DaysData();
         const deadlines = await Deadlines.find({ user: userId });
         
         console.log("CLASSES FOUND : ", classes)
         console.log("DEADLINES FOUND : ", deadlines)
+        
+        const generatedSchedule = await generateSchedule(classes, deadlines);
+        console.log("SCHEDULE GENERATED: ")
+        console.log(generatedSchedule)
 
-        // Generate the schedule using OpenAI
-        const schedule = await generateSchedule(preferences, classes, deadlines);
+        const finalSchedule = parseSchedule(generatedSchedule);
 
-        console.log("SCHEDULE GENERATED: ", schedule)
+        const studyPlans = finalSchedule.map(plan => ({
+            user: userId, // Assuming you have the user's ID
+            date: new Date(plan.date), // Convert the date string to a Date object
+            sessions: plan.sessions.map(session => ({
+                startTime: session.startTime,
+                endTime: session.endTime,
+                task: session.task
+            }))
+        }));        
 
-        res.status(200).json({ schedule });
+        const savedPlans = await StudyPlan.create(studyPlans)
+
+        // await StudyPlan.insertMany(studyPlans);
+        console.log("PLAN SAVED SUCCESSFULLY")
+        res.status(200).json(savedPlans);
     } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
+app.get("/api/studyPlan", async (req, res) => {
+    console.log("REQ USER ID IS: ", userId);
+    try{
+        const studyPlan = await StudyPlan.find({ user: userId });
+        res.status(200).json(studyPlan);
+    } catch (error) {
+        console.error('Error getting deadlines:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
