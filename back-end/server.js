@@ -487,6 +487,7 @@ const parseSchedule = (originalText) => {
     return finalSchedule;
 };
 
+// CREATE A STUDY PLAN FOR THE WEEK
 app.post('/api/studyPlan', async (req, res) => {
     try {
         console.log("USER ID INSIDE POST OPEN API : ", userId)
@@ -512,8 +513,8 @@ app.post('/api/studyPlan', async (req, res) => {
         const finalSchedule = parseSchedule(generatedSchedule);
 
         const studyPlans = finalSchedule.map(plan => ({
-            user: userId, // Assuming you have the user's ID
-            date: new Date(plan.date), // Convert the date string to a Date object
+            user: userId, 
+            date: new Date(plan.date),
             sessions: plan.sessions.map(session => ({
                 startTime: session.startTime,
                 endTime: session.endTime,
@@ -523,7 +524,6 @@ app.post('/api/studyPlan', async (req, res) => {
 
         const savedPlans = await StudyPlan.create(studyPlans)
 
-        // await StudyPlan.insertMany(studyPlans);
         console.log("PLAN SAVED SUCCESSFULLY")
         res.status(200).json(savedPlans);
     } catch (error) {
@@ -531,7 +531,7 @@ app.post('/api/studyPlan', async (req, res) => {
     }
 });
 
-
+// GET ALL STUDY PLANS 
 app.get("/api/studyPlan", async (req, res) => {
     console.log("REQ USER ID IS: ", userId);
     try{
@@ -542,6 +542,36 @@ app.get("/api/studyPlan", async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+app.get("/api/studyPlan/check-current-week", async (req, res) => {
+    try {
+        // Calculate the start and end dates of the current week
+        const { startDate, endDate } = getStartAndEndOfNext7Days();
+
+        // Fetch the study plans for the current week
+        const schedule = await StudyPlan.find({
+            user: userId,
+            date: { 
+                $gte: new Date(startDate),    // date greater than or equal to
+                $lte: new Date(endDate)       // date less than or equal to
+            }
+        }).sort({ date: 1 }); 
+
+        // Check if schedule is empty
+        if (schedule.length > 0) {
+            console.log("SCHEDULE EXISTS AND HERE IT IS")
+            res.status(200).json({ scheduleExists: true, schedule });
+        } else {
+            console.log("SCHEDULE DOES NOT EXIST SORRY")
+            res.status(200).json({ scheduleExists: false, schedule: [] });
+        }
+    } catch (error) {
+        console.error('Error checking schedule:', error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
 // ----------------------------------------------------------------------------------
 
 app.listen(process.env.PORT, () => {

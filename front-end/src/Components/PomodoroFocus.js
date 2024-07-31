@@ -6,7 +6,6 @@ function PomodoroFocus() {
     return (
         <div>
             <GenerateSchedule />
-            {/* <Timer /> */}
         </div>
     );
 }

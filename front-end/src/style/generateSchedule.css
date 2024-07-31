@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500,700&display=swap");
+
+body{
+    font-family: 'DM Sans', sans-serif;
+}
+
+.session-container{
+    margin: 20px;
+    padding: 10px 0px;
+}
+
+.days button {
+    padding: 10px;
+    cursor: pointer;
+    margin: 5px;
+    border:none;
+    background-color: transparent;
+}
+
+.days button.selected {
+    background-color: #d9d9d9; 
+    border-radius: 50%; 
+    width:50px;
+    height:50px;
+}
+
+.days button:hover {
+    background-color: #e0e0e0; 
+    border-radius: 50%; 
+    width:50px;
+    height:50px;
+}
+
+.days button.selected:hover {
+    background-color: #0056b3; 
+}
+
+.day {
+    color: #888888;
+    font-weight: bolder;
+}
+
+.date{
+    color: black;
+    font-weight: bolder;
+}
+
+.session {
+    border: 1px solid #ccc; 
+    padding: 15px; 
+    margin-bottom: 15px; 
+    border-radius: 8px; 
+    background-color: #f9f9f9; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.session-task-time {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 10px; 
+    gap: 15px;
+}
+
+.session-time {
+    /* margin-right: 100px;  */
+    font-weight: bold;
+    font-size: 1.1em; 
+    margin: 0;
+}
+
+.session-task{
+    margin:0;
+    flex-grow: 1;
+}
+
+.session-task h3 {
+    margin: 0;
+    font-size: 1em;
+}
+
+.session-task p {
+    margin: 0;
+    color: #555; 
+}
+
+.pomodoro-btn {
+    padding: 8px 12px; 
+    background-color: #007bff;
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    align-self: flex-end; 
+    margin-top: 10px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.pomodoro-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
