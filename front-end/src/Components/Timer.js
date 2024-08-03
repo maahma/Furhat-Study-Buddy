@@ -74,9 +74,12 @@
 
 
 import React, { useState, useEffect } from 'react';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import "../style/timer.css"
 
 function PomodoroTimer({ task, isActive, onTimerEnd }) {
-    const [time, setTime] = useState(1500); // 25 minutes in seconds
+    const [time, setTime] = useState(3000); // 50 minutes in seconds
     const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
@@ -94,7 +97,7 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
     useEffect(() => {
         if (!isActive) {
             setIsRunning(false);
-            setTime(1500); // Reset timer
+            setTime(3000); // Reset timer
         }
     }, [isActive]);
 
@@ -102,7 +105,7 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
     const stopTimer = () => setIsRunning(false);
     const resetTimer = () => {
         setIsRunning(false);
-        setTime(1500);
+        setTime(3000);
     };
 
     const formatTime = (seconds) => {
@@ -111,11 +114,24 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
         return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
+    const percentage = (time / 3000) * 100; // Calculate the percentage for the progress bar
+
     return (
         <div className="pomodoro-timer">
             <h4>{task}</h4>
             <div className="timer">
-                <span>{formatTime(time)}</span>
+                {/* <span>{formatTime(time)}</span> */}
+                <CircularProgressbar
+                    value={percentage}
+                    text={formatTime(time)}
+                    styles={buildStyles({
+                        textSize: '16px',
+                        pathColor: `rgba(62, 152, 199, ${percentage / 100})`,
+                        textColor: '#f88',
+                        trailColor: '#d6d6d6',
+                        backgroundColor: '#3e98c7',
+                    })}
+                />
             </div>
             <div className="controls">
                 {!isRunning ? <button onClick={startTimer}>Start</button> : <button onClick={stopTimer}>Pause</button>}

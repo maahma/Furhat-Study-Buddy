@@ -18,7 +18,7 @@ function GenerateSchedule() {
                     setIsScheduleGenerated(true);
                     setSchedule(response.data.schedule);
                     console.log("response.data[0]", response.data.schedule[0])
-                    setSelectedDay(response.data.schedule[0].date); // Select the first day by default
+                    setSelectedDay(response.data.schedule[0].date); 
                 }
             } catch (error) {
                 console.error('Error checking schedule:', error);
@@ -37,7 +37,7 @@ function GenerateSchedule() {
             setSchedule(scheduleResponse.data);
             console.log("scheduleResponse.data", scheduleResponse.data)
             setIsScheduleGenerated(true);
-            setSelectedDay(scheduleResponse.data[0].date); // Select the first day by default
+            setSelectedDay(scheduleResponse.data[0].date); 
         } catch (error) {
             console.error('Error generating schedule:', error);
             setError(error.message || 'An error occurred');
@@ -46,7 +46,7 @@ function GenerateSchedule() {
 
     const handleDayClick = (date) => {
         setSelectedDay(date);
-        setActiveSession(null); // Reset active session when day changes
+        setActiveSession(null); 
     };
 
     const handleStartPomodoro = (sessionIndex) => {
@@ -74,6 +74,7 @@ function GenerateSchedule() {
                         </div>
 
                         <button className="pomodoro-btn" onClick={() => handleStartPomodoro(index)}>Start Pomodoro</button>
+                        
                         {activeSession === index && (
                             <PomodoroTimer
                                 task={session.task}
@@ -82,6 +83,8 @@ function GenerateSchedule() {
                             />
                         )}
                     </div>
+
+                    
                 ))}
             </div>
         );

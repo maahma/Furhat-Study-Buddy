@@ -9,7 +9,9 @@ const OAuth2Strategy = require("passport-google-oauth2").Strategy;
 const userdb = require("./model/userSchema")
 const Class = require("./model/classSchema");
 const Deadlines = require("./model/deadlinesSchema");
-const Preferences = require("./model/preferencesSchema")
+// const Preferences = require("./model/preferencesSchema")
+const Notes = require("./model/notesSchema")
+const Quiz = require("./model/quizSchema")
 const StudyPlan = require("./model/studyPlanSchema")
 const { OpenAI } = require('openai');
 
@@ -570,9 +572,111 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
-
 // ----------------------------------------------------------------------------------
+
+
+// ----------------------- GENERATE QUIZ FROM NOTES ROUTE ---------------------------
+app.post("/api/notes", async (req, res) => {
+    const { notes } = req.body;
+    try {
+        console.log("INSIDE POST NOTES")
+        const notesItem = await Notes.create({ notes, user: userId });
+        console.log("NEW NOTES POSTED");
+
+        // Generate the quiz based on the notes
+        const quizContent = await generateQuiz(notesItem.notes);
+        const questions = parseQuiz(quizText);
+
+        console.log("QUIZ CONTENT: ")
+        console.log(quizContent)
+
+        // Save the quiz to the database
+        const quiz = await Quiz.create({ user: userId, questions });
+        console.log("Quiz created successfully:", quiz);
+
+        res.status(200).json({ notesItem, quiz });
+    } catch (error) {
+        console.log("ERROR POSTING NEW NOTES");
+        res.status(400).json({ error: error.message });
+    }
+});
+
+const parseQuiz = (quiz) => {
+    let quizItems = quiz.split("\n\n");
+    console.log(quizItems);
+
+    const questions = quizItems.map(item => {
+        const questionMatch = item.match(/\*\*Question:\*\* (.*?)(?=\*\*Answer:\*\*)/s);
+        const answerMatch = item.match(/\*\*Answer:\*\* (.*?)(?=\n|$)/s);
+        return {
+            questionText: questionMatch ? questionMatch[1].trim() : '',
+            answer: { answerText: answerMatch ? answerMatch[1].trim() : '' }
+        };
+    });
+
+    return questions;
+}
+
+// app.get("/api/notes", async(req, res) => {
+//     try{
+//         const notes = await Notes.find({ user: userId });
+//         res.status(200).json(notes);
+//     } catch (error) {
+//         console.error('Error getting notes:', error);
+//         res.status(500).json({ message: 'Server error' });
+//     }
+// })
+
+async function generateQuiz(notes) {
+    const messages = [
+        {
+            role: "system", content: "You are a helpful assistant that generates quizzes from user notes. Your task is to convert the provided notes into quiz questions and answers."
+        },
+        {   role: "user", content: `
+            I have provided the following notes. Please generate a quiz based on these notes. The quiz should consist of questions and answers derived directly from the content of the notes.
+
+            ### Notes:
+            ${notes}
+
+            **Format:**
+            - Create 20 questions that are clear and directly related to the content of the notes.
+            - Provide a single answer for each question that is accurate and concise.
+            - Format the output as a list of questions with their corresponding answers.
+
+            **Example:**
+            1. **Question:** What is the capital of France?
+                **Answer:** Paris
+
+            2. **Question:** Where is Sheffield in England?
+                **Answer:** South Yorkshire
+            `
+        }
+    ]
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: messages,
+            max_tokens: 1400,
+            temperature: 0.5,
+        });
+
+        const quiz = response.choices[0].message.content;
+        return quiz;
+    } catch (error) {
+        console.error("Error generating quiz:", error);
+        throw new Error("Failed to generate quiz");
+    }
+}
+
+// app.post("/api/quiz", async(req, res) => {
+//     try{
+//     } catch {
+
+//     }
+// })
+// ----------------------------------------------------------------------------------
+
 
 app.listen(process.env.PORT, () => {
     console.log("Connected to MongoDB and listening on port", process.env.PORT);
