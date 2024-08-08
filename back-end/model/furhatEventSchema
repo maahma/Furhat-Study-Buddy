@@ -1,0 +1,9 @@
+const mongoose = require("mongoose");
+
+const furhatEventSchema = new mongoose.Schema({
+
+}, {timestamps: true});
+
+const furhatdb = new mongoose.model("notes", furhatEventSchema);
+
+module.exports = furhatdb;

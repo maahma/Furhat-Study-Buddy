@@ -7,19 +7,25 @@ import DeadlinesForm from "./DeadlinesForm"
 import DisplayClass from "./DisplayClass"
 import DisplayDeadlines from "./DisplayDeadlines"
 import WeeklyCalendar from "./WeeklyCalendar"
+import Furhat from "furhat-gui";
+import FurhatConnect from "./FurhatConnect";
 
 const Dashboard = () => {
 
     const navigate = useNavigate();
     const [userdata, setUserData] = useState({});
+    const [userName, setUserName] = useState("")
     const [showDeadlineForm, setShowDeadlineForm] = useState(false);
     const [showClassForm, setShowClassForm] = useState(false);
-    
+
     const getUser = async () => {
         try {
             const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
             setUserData(response.data.user);
-            console.log("response", response)
+            console.log("response", response.data.user)
+            setUserName(response.data.user.name)
+            // console.log("BEFORE SENDING TO FURHAT USERNAME IS: ", response.data.user.name)
+
         } catch (error) {
             navigate("*")
         }
@@ -28,6 +34,20 @@ const Dashboard = () => {
     useEffect(() => {
         getUser()
     }, [])
+
+    // METHOD 1
+    // useEffect(() => {
+    //     if (userName) {
+    //         // Optionally send a greeting to Furhat when user data is available
+    //         window.FurhatGUI.send({ type: 'say', message: `Welcome, ${userName}` });
+    //     }
+    // }, []);
+
+    // FROM BEN'S CODE
+    // furhat.send({
+    //     event_name: "GreetingUser",
+    //     data: userName
+    // })
 
     const toggleDeadlineForm = () => {
         setShowDeadlineForm(!showDeadlineForm);
@@ -41,7 +61,9 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            {/* <h1>Dashboard</h1> */}
+            {/*METHOD 2*/}
+            <FurhatConnect/>
+
             {Object.keys(userdata).length > 0 ? (
                 <div className="some-container">
                     <div className="heading">
@@ -61,10 +83,6 @@ const Dashboard = () => {
 
                     {showDeadlineForm && <DeadlinesForm />}
                     {showClassForm && <ClassForm />}
-                    
-                    {/* <div className="class-list-container"> 
-                        <DisplayClass /> 
-                    </div> */}
 
                     <div className="class-deadlines-container">
                         <div className="calendar-container">

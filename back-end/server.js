@@ -108,9 +108,21 @@ app.get("/auth/google/callback", (req, res, next) => {
 app.get("/login/success", async(req, res) => {
     console.log("reqqq", req.user);
     if (req.user){
-        res.status(200).json({message: "User has logged in", user: req.user});
+        // res.status(200).json({message: "User has logged in", user: req.user});
+
+        ////////////////////////////////////////////////
+        res.status(200).json({
+            message: "User has logged in",
+            user: {
+                id: req.user._id,
+                name: req.user.displayName
+            }
+        });
+        //////////////////////////////////////////////
+
         console.log("req.user._id: ", req.user._id)
         userId = req.user._id;
+
     } else {
         res.status(400).json({message: "Not Authorized"})
     }
@@ -677,7 +689,17 @@ async function generateQuiz(notes) {
 // })
 // ----------------------------------------------------------------------------------
 
+// ------------------ FURHAT ROUTE --------------------
+app.post("/api/furhat-connect", async (req, res) => {
+    const event = req.body;
+    console.log("Received event from Furhat", JSON.stringify(event, null, 2));
 
-app.listen(process.env.PORT, () => {
+    // For now, just logging the event. You can add the code to save it to your DB later.
+
+    res.status(200).send('Event processed');
+});
+// ----------------------------------------------------------------------------------
+
+const server = app.listen(process.env.PORT, () => {
     console.log("Connected to MongoDB and listening on port", process.env.PORT);
 });
