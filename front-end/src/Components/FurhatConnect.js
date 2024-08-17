@@ -1,95 +1,51 @@
-// import React, { useEffect } from 'react';
-// import FurhatGUI, { Furhat } from 'furhat-gui';
-//
-// function FurhatConnect ({ onMessage }) {
-//     const furhatContainerRef = useRef(null);
-//
-//     useEffect(() => {
-//         const furhatGUI = new FurhatGUI({
-//             url: 'http://localhost:4000',
-//             onConnect: () => console.log('Connected to Furhat GUI'),
-//             onDisconnect: () => console.log('Disconnected from Furhat GUI'),
-//             onMessage: (message) => {
-//                 console.log('Message from Furhat:', message);
-//                 if (onMessage) onMessage(message);
-//             },
-//         });
-//
-//         // Attach Furhat GUI to the DOM element
-//         if (furhatContainerRef.current) {
-//             console.log("ATTACHING FURHAT GUI TO THE DOM ELEMENT")
-//             furhatGUI.attach(furhatContainerRef.current);
-//         }
-//
-//         return () => {
-//             furhatGUI.disconnect();
-//         };
-//     }, [onMessage]);
-//
-//     return (
-//         <div ref={furhatContainerRef} style={{width: '100%', height: '400px'}}>
-//             {/* Furhat GUI will render here */}
-//         </div>
-//     );
-// }
-//
-// export default FurhatConnect;
+import FurhatCore from 'furhat-core';
 
+const address = 'localhost'; // or '127.0.0.1'
+const portNumber = 54321; 
+// let address;
+// let portNumber;
+let callbackFun;
 
-import React, { useEffect, useState } from 'react';
-import FurhatGUI, { Furhat } from 'furhat-gui';
+const API_BASE_URL = `http://${address}:${portNumber}`;
 
-const FurhatComponent = () => {
-    const [furhat, setFurhat] = useState(null);
-
-    console.log("INSIDE FURHAT COMPONENT")
-    useEffect(() => {
-        console.log("Attempting to connect to Furhat....");
-        FurhatGUI()
-            .then(connection => {
-                console.log("INSIDE CONNECTION WITH FURHAT")
-                setFurhat(connection);
-                console.log("CONNECTION HAS BEEN ESTABLISHED")
-                console.log("Furhat object:", furhat);
-
-                connection.onConnectionError((_connection, ev) => {
-                    console.error("Error occurred while connecting to Furhat skill");
-                });
-
-                connection.onConnectionClose(() => {
-                    console.warn("Connection with Furhat skill has been closed");
-                });
-
-                connection.subscribe('furhatos.app.studdybuddy.GreetingEvent', (event) => {
-                    console.log('received event: ', event.event_name);
-                });
-            })
-            .catch(console.error);
-
-        // Clean up on unmount
-        return () => {
-            if (furhat) {
-                // Assuming `furhat` has a method to disconnect
-                // If `furhat-gui` does not provide a disconnect method, this may not be needed
-                furhat.disconnect();
-            }
-        };
-    }, [furhat]); // Empty dependency array to run effect only once on mount
-
-    const sendMessageToFurhat = (message) => {
-        if (furhat) {
-            furhat.send({
-                event_name: 'GreetingEvent',
-                param1: message
-            });
-        }
-    };
-
-    return (
-        <div>
-            <button onClick={() => sendMessageToFurhat('Hello, Furhat!')}>Send Message</button>
-        </div>
-    );
+const InitCallback = (status, hat) => {
+    if (status === 'open') {
+        hat.send({
+        event_name: 'furhatos.event.senses.SenseSkillGUIConnected',
+        port: portNumber,
+        });
+        callbackFun(hat);
+    } else if (status === 'closed' || status === 'failed') {
+        console.log('Trying to reestablish connection to Furhat');
+        hat.init(address, portNumber, 'api', InitCallback);
+    }
 };
 
-export default FurhatComponent;
+// const FurhatGUI = (callback) => {
+//     if (callback !== undefined && typeof callback === 'function') {
+//       return window.fetch('/port', { method: 'GET' }).then(r =>
+//         r.json().then((o) => {
+//           const furhat = new FurhatCore();
+//           address = o.address;
+//           portNumber = o.port;
+//           callbackFun = callback;
+//           console.log("Furhat address and portNumber are: ", address, " ", portNumber)
+//           furhat.init(o.address, o.port, 'api', InitCallback);
+//         })
+//       );
+//     }
+//     return new Error('Callback needs to be a function');
+// };
+
+const FurhatGUI = (callback) => {
+    if (callback !== undefined && typeof callback === 'function') {
+        const furhat = new FurhatCore();
+        console.log("Furhat address and portNumber are:", address, portNumber);
+        furhat.init(address, portNumber, 'api', InitCallback);
+        callbackFun = callback;
+    } else {
+        return new Error('Callback needs to be a function');
+    }
+};
+
+export default FurhatGUI;

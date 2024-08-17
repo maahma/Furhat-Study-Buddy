@@ -62,13 +62,12 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             {/*METHOD 2*/}
-            <FurhatConnect/>
+            {/* <FurhatConnect/> */}
 
             {Object.keys(userdata).length > 0 ? (
                 <div className="some-container">
                     <div className="heading">
                         <h2 className="greetings-user">Welcome, {userdata.displayName}</h2>
-                    
                         <div className="button-group">
                             <button className="class-button" onClick={toggleClassForm}>
                                 {showClassForm ? 'Hide Class Form' : 'Add Class'}
@@ -78,7 +77,6 @@ const Dashboard = () => {
                                 {showDeadlineForm ? 'Hide Deadline Form' : 'Add Deadline'}
                             </button>
                         </div>
-
                     </div>
 
                     {showDeadlineForm && <DeadlinesForm />}

@@ -78,6 +78,7 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import "../style/timer.css"
 
+
 function PomodoroTimer({ task, isActive, onTimerEnd }) {
     const [time, setTime] = useState(3000); // 50 minutes in seconds
     const [isRunning, setIsRunning] = useState(false);

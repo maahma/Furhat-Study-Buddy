@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { DeadlinesContext } from '../Context/DeadlinesContext';
 
 export const useDeadlineContext = () => {

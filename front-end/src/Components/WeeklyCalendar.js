@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ClassesContext } from '../Context/ClassesContext';
 import "../style/weeklyCalendar.css";
 
+
 const Calendar = () => {
   const [startDate, setStartDate] = useState(new Date());
   // const [classes, setClasses] = useState([]);

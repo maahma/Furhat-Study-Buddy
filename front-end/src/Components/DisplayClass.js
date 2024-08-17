@@ -1,5 +1,7 @@
 import { useClassContext } from '../Hooks/useClassContext';
 import "../style/classList.css";
+import React from "react";
+
 
 const DisplayClass = ({classItem}) => {
     const { classes } = useClassContext();

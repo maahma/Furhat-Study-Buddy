@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Class-Path: furhat-commons-2.7.0.jar kotlinx-coroutines-core-jvm-1.7.1.j
+ ar kotlin-stdlib-jdk8-1.8.21.jar kotlin-stdlib-jdk7-1.8.21.jar kotlin-r
+ eflect-1.8.21.jar kotlin-stdlib-1.8.21.jar liblinear-2.30.jar commons-c
+ sv-1.5.jar log4j-core-2.17.1.jar log4j-api-2.17.1.jar kotlin-stdlib-com
+ mon-1.8.21.jar annotations-23.0.0.jar
+Main-Class: furhatos.app.furhatstudybuddy.FurhatstudybuddySkill
+

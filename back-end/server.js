@@ -1,3 +1,4 @@
+const axios = require('axios');
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -15,7 +16,28 @@ const Quiz = require("./model/quizSchema")
 const StudyPlan = require("./model/studyPlanSchema")
 const { OpenAI } = require('openai');
 
+// const FURHAT_API_URL = 'http://localhost:4000';
+// const FURHAT_API_KEY = '4b0e1ba2-94c0-4fdf-af01-87501f570da3';    // NO AUTHORIZATION REQUIRED ACCORDING TO SETUP
+
 let userId = ""
+
+// const allowedOrigins = [
+//     "http://localhost:3000",
+//     "http://localhost:4000"
+// ];
+
+// app.use(cors({
+//     origin: function(origin, callback) {
+//         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     methods: "GET,POST,PUT,DELETE",
+//     credentials: true
+// }));
+
 
 app.use(cors({
     origin: "http://localhost:3000",
@@ -23,7 +45,10 @@ app.use(cors({
     credentials: true
 }));
 
+// app.use(cors());
+
 app.use(express.json());
+
 
 // SETUP SESSION
 app.use(session({
@@ -108,7 +133,6 @@ app.get("/auth/google/callback", (req, res, next) => {
 app.get("/login/success", async(req, res) => {
     console.log("reqqq", req.user);
     if (req.user){
-        // res.status(200).json({message: "User has logged in", user: req.user});
 
         ////////////////////////////////////////////////
         res.status(200).json({
@@ -122,6 +146,9 @@ app.get("/login/success", async(req, res) => {
 
         console.log("req.user._id: ", req.user._id)
         userId = req.user._id;
+
+        // sendRequestToFurhat()
+            
 
     } else {
         res.status(400).json({message: "Not Authorized"})
@@ -689,15 +716,53 @@ async function generateQuiz(notes) {
 // })
 // ----------------------------------------------------------------------------------
 
-// ------------------ FURHAT ROUTE --------------------
-app.post("/api/furhat-connect", async (req, res) => {
-    const event = req.body;
-    console.log("Received event from Furhat", JSON.stringify(event, null, 2));
+// ------------------ FURHAT ROUTE --------------------------------------------------
+// app.post("/api/furhat-connect", async (req, res) => {
+//     try {
+//         console.log('Connection request received from Furhat.');
+//         res.json({ message: 'Connected to Furhat successfully!' });
+//     } catch (error) {
+//         console.error('Error processing request:', error);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }    
+// });
 
-    // For now, just logging the event. You can add the code to save it to your DB later.
+// const sendRequestToFurhat = async () => {
+//     try {
+//         const response = await axios.post("http://localhost:5000/webapp-connect", {
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             }, 
+//             message: 'Request to connect to Furhat from backend server',
+//         }, { withCredentials: true });
+//         console.log(response.data.message);
+//     } catch (error) {
+//         console.error('Error connecting to Furhat from backend server: ', error);
+//     }
+// }
 
-    res.status(200).send('Event processed');
-});
+// app.post("/api/furhat-greet", async (req, res) => {
+//     try {
+//         console.log()
+//         console.log("INSIDE FURHAT GREET FUNCTION IN SERVER.JS")
+//         console.log()
+//         const userName = req.body.name; // Get the user's name from the request body
+
+//         const response = await axios.post("http://localhost:4000", {
+//             // text: "Hello, " + userName,
+//             // blocking: true,
+//             event_name: "GreetUser",
+//             data: { name: userName }
+//         });
+
+//         // Send a response back to the frontend to confirm that the request was sent
+//         res.status(200).json({ status: 'success', message: 'Greeting request sent.' });
+//     } catch (error) {
+//         console.error('Error sending greeting to Furhat:', error);
+//         res.status(500).json({ message: 'Failed to send greeting' });
+//     }
+// });
+
 // ----------------------------------------------------------------------------------
 
 const server = app.listen(process.env.PORT, () => {

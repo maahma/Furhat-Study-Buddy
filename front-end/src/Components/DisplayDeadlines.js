@@ -1,6 +1,8 @@
 import { useDeadlineContext } from '../Hooks/useDeadlineContext';
 import "../style/deadlinesList.css";
 import { format } from 'date-fns';
+import React from 'react';
+
 
 const DisplayDeadline = ({deadlineItem}) => {
     const { deadlines } = useDeadlineContext();
