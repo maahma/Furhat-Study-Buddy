@@ -4,15 +4,14 @@ import furhatos.event.senses.SenseSkillGUIConnected
 import furhatos.flow.kotlin.*
 import furhatos.records.Record
 import furhatos.skills.RemoteGUI
-//import furhatos.skills.HostedGUI
-
 
 // Our GUI declaration
 val GUI = RemoteGUI("FurhatStudyBuddy", "localhost", PORT)
-//val GUI = HostedGUI("FurhatStudyBuddy", "localhost", PORT)
 
-// val VARIABLE_SET = "VariableSet"
-// val CLICK_BUTTON = "ClickButton"
+val GREET_USER = "GreetUser"
+val DASHBOARD_LOADED = "DashboardLoaded"
+val FOCUS_TIMER = "FocusTimer"
+val QUIZ_ME = "QuizMe"
 
 // Starting state, before our GUI has connected.
 val NoGUI: State = state(null) {
@@ -22,12 +21,28 @@ val NoGUI: State = state(null) {
 }
 
 val GUIConnected = state(NoGUI) {
-    onEntry {
-        furhat.say("Connected to the application.")
-        // Pass data to GUI
-        // send(DataDelivery(buttons = buttons, inputFields = inputFieldData.keys.toList()))
+
+    onEvent(GREET_USER){
+        val userName = it.get("data")
+        furhat.say("Hello $userName, welcome to Furhat Study Buddy application!")
+        send(SPEECH_DONE)
     }
 
+    onEvent(DASHBOARD_LOADED){
+        furhat.say("This is your dashboard")
+        send(SPEECH_DONE)
+    }
+
+    onEvent(FOCUS_TIMER){
+        furhat.say("You can generate a schedule on this page and start a study session")
+        send(SPEECH_DONE)
+    }
+
+    onEvent(QUIZ_ME){
+        furhat.say("You can type your notes in the box below and let me quiz you")
+        send(SPEECH_DONE)
+    }
+    
     // Users clicked any of our buttons
     // onEvent(CLICK_BUTTON) {
     //     // Directly respond with the value we get from the event, with a fallback

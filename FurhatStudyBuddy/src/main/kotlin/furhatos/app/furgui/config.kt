@@ -2,19 +2,16 @@ package furhatos.app.furgui
 
 import furhatos.event.Event
 import furhatos.skills.RemoteGUI
-//import furhatos.skills.HostedGUI
 
-/*
-    Variables and events
- */
 val PORT = 3000 // GUI Port
 val SPEECH_DONE = "SpeechDone"
 
 // Event used to pass data to GUI
-class DataDelivery(
-        val buttons : List<String>,
-        val inputFields: List<String>
-) : Event()
+//class DataDelivery(
+//        val userName : String
+//) : Event()
+
+class GreetUserEvent(val name: String) : Event()
 
 
 

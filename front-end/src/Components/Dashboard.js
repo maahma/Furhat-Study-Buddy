@@ -7,47 +7,88 @@ import DeadlinesForm from "./DeadlinesForm"
 import DisplayClass from "./DisplayClass"
 import DisplayDeadlines from "./DisplayDeadlines"
 import WeeklyCalendar from "./WeeklyCalendar"
-import Furhat from "furhat-gui";
-import FurhatConnect from "./FurhatConnect";
+import { useFurhat } from '../Context/FurhatContext';
 
 const Dashboard = () => {
 
     const navigate = useNavigate();
     const [userdata, setUserData] = useState({});
-    const [userName, setUserName] = useState("")
+    const [userName, setUserName] = useState()
     const [showDeadlineForm, setShowDeadlineForm] = useState(false);
     const [showClassForm, setShowClassForm] = useState(false);
+    const { furhat, furhatConnected } = useFurhat();
+    const [greeted, setGreeted] = useState(false); 
 
-    const getUser = async () => {
-        try {
-            const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
-            setUserData(response.data.user);
-            console.log("response", response.data.user)
-            setUserName(response.data.user.name)
-            // console.log("BEFORE SENDING TO FURHAT USERNAME IS: ", response.data.user.name)
 
-        } catch (error) {
-            navigate("*")
-        }
-    }
-
+    // Fetch user data on mount
     useEffect(() => {
-        getUser()
-    }, [])
+        const getUser = async () => {
+            try {
+                const response = await axios.get("http://localhost:6005/login/success", { withCredentials: true });
+                setUserData(response.data.user);
+                setUserName(response.data.user.name);
+            } catch (error) {
+                navigate("*");
+            }
+        };
+        getUser();
+    }, [navigate]);
 
-    // METHOD 1
-    // useEffect(() => {
-    //     if (userName) {
-    //         // Optionally send a greeting to Furhat when user data is available
-    //         window.FurhatGUI.send({ type: 'say', message: `Welcome, ${userName}` });
+    // Send events to Furhat when user data is ready and Furhat is connected
+    useEffect(() => {
+        if (furhatConnected && furhat) {
+            console.log("Furhat instance in Dashboard:", furhat);
+            furhat.send({
+                event_name: 'GreetUser',
+                data: userName
+            })
+            setGreeted(true);
+            console.log("GreetUser event sent successfully");
+            // if (Object.keys(userdata).length > 0) {
+            //     console.log("userName is : ", userName)
+            //     furhat.send({
+            //         event_name: 'GreetUser',
+            //         data: userName
+            //     })
+            //     console.log("GreetUser event sent successfully");
+            // } else {
+            //     console.log("Error in user data so event can't execute")
+            // }
+            furhat.send({
+                event_name: 'DashboardLoaded'
+            });
+            console.log("DashboardLoaded event sent successfully");
+        } else {
+            console.log("Furhat not available in Dashboard")
+        }
+    }, [furhat, furhatConnected, userdata, userName, greeted]);
+
+
+    // const getUser = async () => {
+    //     try {
+    //         const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
+    //         setUserData(response.data.user);
+    //         setUserName(response.data.user.name)
+    //     } catch (error) {
+    //         navigate("*")
     //     }
-    // }, []);
+    // }
 
-    // FROM BEN'S CODE
-    // furhat.send({
-    //     event_name: "GreetingUser",
-    //     data: userName
-    // })
+    // useEffect(() => {
+    //     getUser()
+    //     if (furhatConnected && furhat) {
+    //         console.log("Furhat instance in Dashboard:", furhat);
+    //         furhat.send({
+    //             event_name: 'DashboardLoaded'
+    //         });
+    //         furhat.send({
+    //             event_name: 'GreetUser',
+    //             data: userName
+    //         });
+    //     } else {
+    //         console.log("Furhat not in Dashboard")
+    //     }
+    // }, [furhat, furhatConnected])
 
     const toggleDeadlineForm = () => {
         setShowDeadlineForm(!showDeadlineForm);
@@ -61,8 +102,6 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            {/*METHOD 2*/}
-            {/* <FurhatConnect/> */}
 
             {Object.keys(userdata).length > 0 ? (
                 <div className="some-container">
