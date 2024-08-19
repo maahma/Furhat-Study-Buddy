@@ -5,13 +5,12 @@ import axios from "axios";
 
 const Navbar = () => {
     const [userdata, setUserData] = useState({});
-    console.log("userdata: ", userdata)
     
     const getUser = async () => {
         try {
             const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
             setUserData(response.data.user)
-
+            console.log("response.data.user in Navbar is: ", response)
             if(!response.data.user.image){
                 console.log("NO USER IMAGE SET")
             }
@@ -60,8 +59,8 @@ const Navbar = () => {
                                             </NavLink>
                                         </li>
 
-                                        <li className="quiz">
-                                            <NavLink to="/quiz">
+                                        <li className="notes">
+                                            <NavLink to="/notes">
                                                 <img className="quiz-image" src="/images/quiz.png" alt="quiz-image" />
                                             </NavLink>
                                         </li>
@@ -76,7 +75,7 @@ const Navbar = () => {
                                                 <img src={userdata?.image} alt="user-image" />
                                             </div>
                                             <div className="user-name">
-                                                <span>{userdata?.displayName}</span>
+                                                <span>{userdata.name}</span>
                                             </div>
 
                                         </li>                                        

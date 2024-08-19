@@ -11,7 +11,13 @@ val SPEECH_DONE = "SpeechDone"
 //        val userName : String
 //) : Event()
 
-class GreetUserEvent(val name: String) : Event()
+class QuizData(
+    val questions: List<QuestionData>
+) : Event()
 
+data class QuestionData(
+    val questionText: String,
+    val answer: String
+)
 
 

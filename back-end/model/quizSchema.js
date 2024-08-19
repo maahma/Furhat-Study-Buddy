@@ -15,6 +15,13 @@ const quizSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+
+    notes: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'notes',
+        required: true
+    },
+
     questions: [questionSchema],
 }, {timestamps: true});
 

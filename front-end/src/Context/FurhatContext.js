@@ -17,9 +17,7 @@ export const FurhatContextProvider = ({ children }) => {
                 setFurhat(furhatInstance);
                 console.log("FURHAT IS SET IN FURHAT CONTEXT", furhatInstance)
                 setFurhatConnected(true);
-                // furhatInstance.send({
-                //     event_name: 'furhatos.event.senses.SenseSkillGUIConnected',
-                // });
+                
             } catch (error) {
                 console.error("Failed to connect to Furhat:", error);
             }

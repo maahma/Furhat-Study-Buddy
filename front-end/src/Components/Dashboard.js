@@ -13,82 +13,33 @@ const Dashboard = () => {
 
     const navigate = useNavigate();
     const [userdata, setUserData] = useState({});
-    const [userName, setUserName] = useState()
     const [showDeadlineForm, setShowDeadlineForm] = useState(false);
     const [showClassForm, setShowClassForm] = useState(false);
     const { furhat, furhatConnected } = useFurhat();
     const [greeted, setGreeted] = useState(false); 
 
+    const getUser = async () => {
+        try {
+            const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
+            setUserData(response.data.user);
+        } catch (error) {
+            navigate("*")
+        }
+    }
 
-    // Fetch user data on mount
     useEffect(() => {
-        const getUser = async () => {
-            try {
-                const response = await axios.get("http://localhost:6005/login/success", { withCredentials: true });
-                setUserData(response.data.user);
-                setUserName(response.data.user.name);
-            } catch (error) {
-                navigate("*");
-            }
-        };
-        getUser();
-    }, [navigate]);
-
-    // Send events to Furhat when user data is ready and Furhat is connected
-    useEffect(() => {
+        getUser()
         if (furhatConnected && furhat) {
             console.log("Furhat instance in Dashboard:", furhat);
             furhat.send({
                 event_name: 'GreetUser',
-                data: userName
+                data: userdata.name
             })
-            setGreeted(true);
-            console.log("GreetUser event sent successfully");
-            // if (Object.keys(userdata).length > 0) {
-            //     console.log("userName is : ", userName)
-            //     furhat.send({
-            //         event_name: 'GreetUser',
-            //         data: userName
-            //     })
-            //     console.log("GreetUser event sent successfully");
-            // } else {
-            //     console.log("Error in user data so event can't execute")
-            // }
             furhat.send({
                 event_name: 'DashboardLoaded'
-            });
-            console.log("DashboardLoaded event sent successfully");
-        } else {
-            console.log("Furhat not available in Dashboard")
+            })
         }
-    }, [furhat, furhatConnected, userdata, userName, greeted]);
-
-
-    // const getUser = async () => {
-    //     try {
-    //         const response = await axios.get("http://localhost:6005/login/success", {withCredentials: true});
-    //         setUserData(response.data.user);
-    //         setUserName(response.data.user.name)
-    //     } catch (error) {
-    //         navigate("*")
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     getUser()
-    //     if (furhatConnected && furhat) {
-    //         console.log("Furhat instance in Dashboard:", furhat);
-    //         furhat.send({
-    //             event_name: 'DashboardLoaded'
-    //         });
-    //         furhat.send({
-    //             event_name: 'GreetUser',
-    //             data: userName
-    //         });
-    //     } else {
-    //         console.log("Furhat not in Dashboard")
-    //     }
-    // }, [furhat, furhatConnected])
+    }, [furhat, furhatConnected])
 
     const toggleDeadlineForm = () => {
         setShowDeadlineForm(!showDeadlineForm);
@@ -106,7 +57,7 @@ const Dashboard = () => {
             {Object.keys(userdata).length > 0 ? (
                 <div className="some-container">
                     <div className="heading">
-                        <h2 className="greetings-user">Welcome, {userdata.displayName}</h2>
+                        <h2 className="greetings-user">Welcome, {userdata.name || ""}</h2>
                         <div className="button-group">
                             <button className="class-button" onClick={toggleClassForm}>
                                 {showClassForm ? 'Hide Class Form' : 'Add Class'}

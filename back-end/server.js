@@ -12,7 +12,7 @@ const Class = require("./model/classSchema");
 const Deadlines = require("./model/deadlinesSchema");
 // const Preferences = require("./model/preferencesSchema")
 const Notes = require("./model/notesSchema")
-const Quiz = require("./model/quizSchema")
+const {quizdb, notesdb} = require("./model/quizSchema")
 const StudyPlan = require("./model/studyPlanSchema")
 const { OpenAI } = require('openai');
 
@@ -106,20 +106,17 @@ app.get("/auth/google/callback", (req, res, next) => {
 
 
 app.get("/login/success", async(req, res) => {
-    console.log("reqqq", req.user);
     if (req.user){
-
+        console.log("req.user: ", req.user)
         res.status(200).json({
             message: "User has logged in",
             user: {
                 id: req.user._id,
-                name: req.user.displayName
+                name: req.user.displayName,
+                image: req.user.image
             }
         });
-
-        console.log("req.user._id: ", req.user._id)
         userId = req.user._id;            
-
     } else {
         res.status(400).json({message: "Not Authorized"})
     }
@@ -138,7 +135,6 @@ app.get("/logout", (req, res, next) => {
 // -------------------------------- CLASS ROUTES --------------------------------
 // GET CLASSES FOR THE USER
 app.get("/api/classes", async (req, res) => {
-    console.log("REQ USER ID IS: ", userId);
     try{
         const classes = await Class.find({ user: userId });
 
@@ -182,7 +178,6 @@ app.post("/api/classes", async (req, res) => {
 // DELETE A CLASS
 app.delete("/api/classes/:id", async (req, res) => {
     const { id } = req.params;
-    console.log("id: ", id)
 
     try {
         const classItem = await Class.findOneAndDelete({ _id: id, user: userId });
@@ -223,8 +218,6 @@ app.patch("/api/classes/:id", async (req, res) => {
 app.get("/api/classes", async (req, res) => {
     const { startDate, endDate } = req.query;
 
-    // console.log(`Received startDate: ${startDate}, endDate: ${endDate}`);
-
     try {
         const classes = await Class.find({
             date: { $gte: new Date(startDate), $lte: new Date(endDate) }
@@ -241,7 +234,6 @@ app.get("/api/classes", async (req, res) => {
 // -------------------------------- DEADLINES ROUTES --------------------------------
 // GET DEADLINES FOR THE USER
 app.get("/api/deadlines", async (req, res) => {
-    console.log("REQ USER ID IS: ", userId);
     try{
         const deadlines = await Deadlines.find({ user: userId });
         res.status(200).json(deadlines);
@@ -267,7 +259,6 @@ app.post("/api/deadlines", async (req, res) => {
 // DELETE A DEADLINE
 app.delete("/api/deadlines/:id", async (req, res) => {
     const { id } = req.params;
-    console.log("id: ", id)
     
     try {
         const deadlineItem = await Deadlines.findOneAndDelete({ _id: id, user: userId });
@@ -442,8 +433,6 @@ async function generateSchedule(classes, deadlines) {
 const parseSchedule = (originalText) => {
     let splitOriginalText = originalText.split(/\n(?=### \*\*)/);
 
-    // splitOriginalText = splitOriginalText.slice(1);
-
     const finalSchedule = [];
 
     splitOriginalText.forEach((element) => {
@@ -501,8 +490,6 @@ const parseSchedule = (originalText) => {
 // CREATE A STUDY PLAN FOR THE WEEK
 app.post('/api/studyPlan', async (req, res) => {
     try {
-        console.log("USER ID INSIDE POST OPEN API : ", userId)
-
         // Fetch user preferences
         // const preferences = await Preferences.findOne({ userId });
         // if (!preferences) {
@@ -544,7 +531,6 @@ app.post('/api/studyPlan', async (req, res) => {
 
 // GET ALL STUDY PLANS 
 app.get("/api/studyPlan", async (req, res) => {
-    console.log("REQ USER ID IS: ", userId);
     try{
         const studyPlan = await StudyPlan.find({ user: userId });
         res.status(200).json(studyPlan);
@@ -587,6 +573,7 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
 // ----------------------- GENERATE QUIZ FROM NOTES ROUTE ---------------------------
 app.post("/api/notes", async (req, res) => {
     const { notes } = req.body;
+    console.log("NOTES IN POST NOTES METHOD: ", req.body)
     try {
         console.log("INSIDE POST NOTES")
         const notesItem = await Notes.create({ notes, user: userId });
@@ -594,13 +581,19 @@ app.post("/api/notes", async (req, res) => {
 
         // Generate the quiz based on the notes
         const quizContent = await generateQuiz(notesItem.notes);
-        const questions = parseQuiz(quizText);
-
+        console.log("QUIZ HAS BEEN GENERATED. NEXT STEP: PARSE QUIZ")
         console.log("QUIZ CONTENT: ")
         console.log(quizContent)
 
+        const questions = parseQuiz(quizContent);
+
+        console.log("QUESTIONS: ")
+        console.log(questions)
+
+        console.log("notesItem._id: ", notesItem._id)
+
         // Save the quiz to the database
-        const quiz = await Quiz.create({ user: userId, questions });
+        const quiz = await quizdb.create({ user: userId, notes: notesItem._id, questions });
         console.log("Quiz created successfully:", quiz);
 
         res.status(200).json({ notesItem, quiz });
@@ -611,12 +604,16 @@ app.post("/api/notes", async (req, res) => {
 });
 
 const parseQuiz = (quiz) => {
-    let quizItems = quiz.split("\n\n");
+    console.log("INSIDE PARSE QUIZ")
+    console.log("QUIZ CONTENT TO PARSE: ", quiz);
+
+    let quizItems = quiz.split(/\n\s*\n/);
+    console.log("QUIZ ITEMS")
     console.log(quizItems);
 
     const questions = quizItems.map(item => {
-        const questionMatch = item.match(/\*\*Question:\*\* (.*?)(?=\*\*Answer:\*\*)/s);
-        const answerMatch = item.match(/\*\*Answer:\*\* (.*?)(?=\n|$)/s);
+        const questionMatch = item.match(/\*\*Question:\*\* (.+?)(?=\*\*Answer:\*\*)/s);
+        const answerMatch = item.match(/\*\*Answer:\*\* (.+)/s);
         return {
             questionText: questionMatch ? questionMatch[1].trim() : '',
             answer: { answerText: answerMatch ? answerMatch[1].trim() : '' }
@@ -637,6 +634,7 @@ const parseQuiz = (quiz) => {
 // })
 
 async function generateQuiz(notes) {
+    console.log("Inside the generate quiz method")
     const messages = [
         {
             role: "system", content: "You are a helpful assistant that generates quizzes from user notes. Your task is to convert the provided notes into quiz questions and answers."
@@ -678,12 +676,6 @@ async function generateQuiz(notes) {
     }
 }
 
-// app.post("/api/quiz", async(req, res) => {
-//     try{
-//     } catch {
-
-//     }
-// })
 // ----------------------------------------------------------------------------------
 
 const server = app.listen(process.env.PORT, () => {

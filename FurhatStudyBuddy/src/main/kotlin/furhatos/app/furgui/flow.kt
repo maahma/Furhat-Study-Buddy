@@ -11,6 +11,7 @@ val GUI = RemoteGUI("FurhatStudyBuddy", "localhost", PORT)
 val GREET_USER = "GreetUser"
 val DASHBOARD_LOADED = "DashboardLoaded"
 val FOCUS_TIMER = "FocusTimer"
+val QUIZ_PAGE = "QuizPage"
 val QUIZ_ME = "QuizMe"
 
 // Starting state, before our GUI has connected.
@@ -21,15 +22,18 @@ val NoGUI: State = state(null) {
 }
 
 val GUIConnected = state(NoGUI) {
+    onEntry{
+        furhat.say("Connected to the application")
+    }
 
     onEvent(GREET_USER){
         val userName = it.get("data")
-        furhat.say("Hello $userName, welcome to Furhat Study Buddy application!")
+        furhat.say("Hello $userName, welcome to the Furhat Study Buddy application!")
         send(SPEECH_DONE)
     }
 
     onEvent(DASHBOARD_LOADED){
-        furhat.say("This is your dashboard")
+        furhat.say("This is your dashboard where you can view your deadlines and classes")
         send(SPEECH_DONE)
     }
 
@@ -38,19 +42,15 @@ val GUIConnected = state(NoGUI) {
         send(SPEECH_DONE)
     }
 
-    onEvent(QUIZ_ME){
+    onEvent(QUIZ_PAGE){
         furhat.say("You can type your notes in the box below and let me quiz you")
         send(SPEECH_DONE)
     }
-    
-    // Users clicked any of our buttons
-    // onEvent(CLICK_BUTTON) {
-    //     // Directly respond with the value we get from the event, with a fallback
-    //     furhat.say("You pressed ${it.get("data") ?: "something I'm not aware of" }")
 
-    //     // Let the GUI know we're done speaking, to unlock buttons
-    //     send(SPEECH_DONE)
-    // }
+    onEvent(QUIZ_ME){
+        val quizData = it.get("data") as QuizData
+        handleQuizData(quizData)
+    }
 
     // Users saved some input
     // onEvent(VARIABLE_SET) {

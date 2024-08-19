@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PomodoroTimer from './Timer';
 import "../style/generateSchedule.css"
+import { useFurhat } from '../Context/FurhatContext';
 
 function GenerateSchedule() {
     const [schedule, setSchedule] = useState([]);
@@ -9,6 +10,7 @@ function GenerateSchedule() {
     const [isScheduleGenerated, setIsScheduleGenerated] = useState(false);
     const [selectedDay, setSelectedDay] = useState(null);
     const [activeSession, setActiveSession] = useState(null);
+    const { furhat, furhatConnected } = useFurhat();
 
     useEffect(() => {
         const checkSchedule = async () => {
@@ -89,6 +91,15 @@ function GenerateSchedule() {
             </div>
         );
     };
+
+    useEffect(() => {
+        if (furhatConnected && furhat) {
+            furhat.send({
+                event_name: 'FocusTimer'
+            });
+            console.log("FocusTimer event sent successfully")
+        }
+    }, [furhat, furhatConnected])
 
     return (
         <div className="session-container">
