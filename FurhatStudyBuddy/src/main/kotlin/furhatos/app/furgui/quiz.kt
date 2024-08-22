@@ -37,13 +37,30 @@ val QuizState = state {
 
     onResponse {
         val userAnswer = it.text
-        val correctAnswer = quizQuestions[currentQuestionIndex].answerText
+        val correctAnswer = quizQuestions[currentQuestionIndex].answerText.trim()
+
+        // Check for an exact match first
         if (userAnswer.equals(correctAnswer, ignoreCase = true)) {
             furhat.say("That's correct!")
         } else {
-            furhat.say("Sorry, the correct answer is $correctAnswer.")
-            incorrectQuestions.add(quizQuestions[currentQuestionIndex])
+            furhat.say("User's answer is $userAnswer and correct answer is $correctAnswer")
+            furhat.say("Comparing user answer and correct answer using OpenAI")
+            // Create an instance of OpenAIQuizAssistant to call the method
+            val quizAssistant = OpenAIQuizAssistant()
+
+            // Use OpenAI to check if the answer is close to the correct answer
+            val isClose = quizAssistant.isAnswerClose(userAnswer, correctAnswer)
+            furhat.say("OpenAI returns $isClose")
+
+
+            if (isClose) {
+                furhat.say("That's close enough!")
+            } else {
+                furhat.say("Sorry, the correct answer is $correctAnswer.")
+                incorrectQuestions.add(quizQuestions[currentQuestionIndex])
+            }
         }
+
         currentQuestionIndex++
         reentry() // Move to the next question
     }
