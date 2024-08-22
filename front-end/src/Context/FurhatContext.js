@@ -6,8 +6,10 @@ const FurhatContext = createContext();
 export const FurhatContextProvider = ({ children }) => {
     const [furhat, setFurhat] = useState(null);
     const [furhatConnected, setFurhatConnected] = useState(false);
-    const address =  'localhost' //'192.168.131.118' 
-    const portNumber = 8080      //1932; 
+    // const address =  'localhost' // FOR SDK
+    // const portNumber = 8080      // FOR SDK 
+    const address =  '192.168.137.55' 
+    const portNumber = 80; 
 
     useEffect(() => {
         const initializeFurhat = async () => {
@@ -15,6 +17,9 @@ export const FurhatContextProvider = ({ children }) => {
                 let furhatInstance = new Furhat(address, portNumber, 'api');
                 await furhatInstance.init();
                 setFurhat(furhatInstance);
+                furhatInstance.send({
+                    event_name: 'furhatos.event.senses.SenseSkillGUIConnected',
+                })
                 console.log("FURHAT IS SET IN FURHAT CONTEXT", furhatInstance)
                 setFurhatConnected(true);
                 

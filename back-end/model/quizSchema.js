@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
+// import Notes from './notesSchema.js';
 
 const answerSchema = new mongoose.Schema({
     answerText: String,
@@ -26,6 +27,7 @@ const quizSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 const quizdb = new mongoose.model("quiz", quizSchema);
-const notesdb = require("./notesSchema");
+// const notesdb = Notes
 
-module.exports = { quizdb, notesdb }
+// export default { quizdb, notesdb };
+export default quizdb

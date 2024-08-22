@@ -28,18 +28,22 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        getUser()
-        if (furhatConnected && furhat) {
+        getUser();
+    }, [navigate]);
+
+    useEffect(() => {
+        if (userdata.name && furhatConnected && furhat && !greeted) {
             console.log("Furhat instance in Dashboard:", furhat);
             furhat.send({
                 event_name: 'GreetUser',
                 data: userdata.name
-            })
+            });
             furhat.send({
                 event_name: 'DashboardLoaded'
-            })
+            });
+            setGreeted(true); // Ensure the greeting is sent only once
         }
-    }, [furhat, furhatConnected])
+    }, [userdata, furhat, furhatConnected, greeted]);
 
     const toggleDeadlineForm = () => {
         setShowDeadlineForm(!showDeadlineForm);

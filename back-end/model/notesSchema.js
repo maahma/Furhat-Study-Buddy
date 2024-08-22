@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const notesSchema = new mongoose.Schema({
     user: {
@@ -13,6 +13,6 @@ const notesSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-const notesdb = new mongoose.model("notes", notesSchema);
+const Notes = new mongoose.model("notes", notesSchema);
 
-module.exports = notesdb;
+export default Notes;

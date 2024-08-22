@@ -6,7 +6,6 @@ import Home from './Components/Home';
 import Error from './Components/Error';
 import Notes from './Components/Notes';
 import GenerateSchedule from './Components/GenerateSchedule';
-import PomodoroFocus from './Components/PomodoroFocus';
 import { ClassesContextProvider } from './Context/ClassesContext';
 import { DeadlinesContextProvider } from './Context/DeadlinesContext';
 import { FurhatContextProvider } from './Context/FurhatContext'
@@ -28,9 +27,9 @@ function App() {
 
                 <Route path="/dashboard" element={<Dashboard />} />
 
-                <Route path='/pomodoroFocus' element={<PomodoroFocus />} />
+                <Route path='/pomodoroFocus' element={<GenerateSchedule />} />
 
-                <Route path="/notes" element={<Notes />} />
+                <Route path="/quiz" element={<Notes />} />
 
                 <Route path='*' element={<Error />} />
 

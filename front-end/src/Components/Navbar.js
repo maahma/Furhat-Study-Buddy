@@ -59,8 +59,8 @@ const Navbar = () => {
                                             </NavLink>
                                         </li>
 
-                                        <li className="notes">
-                                            <NavLink to="/notes">
+                                        <li className="quiz">
+                                            <NavLink to="/quiz">
                                                 <img className="quiz-image" src="/images/quiz.png" alt="quiz-image" />
                                             </NavLink>
                                         </li>

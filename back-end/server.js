@@ -1,20 +1,23 @@
-const axios = require('axios');
-require("dotenv").config();
-const express = require("express");
+import dotenv from 'dotenv';
+dotenv.config();
+
+import './db/connection.js';
+import axios from 'axios';
+import express from 'express';
+import cors from 'cors';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as OAuth2Strategy } from 'passport-google-oauth2';
+import userdb from './model/userSchema.js';
+import Class from './model/classSchema.js';
+import Deadlines from './model/deadlinesSchema.js';
+import Notes from './model/notesSchema.js';
+// import { quizdb, notesdb } from './model/quizSchema.js';
+import quizdb from './model/quizSchema.js';
+import StudyPlan from './model/studyPlanSchema.js';
+import { OpenAI } from 'openai';
+
 const app = express();
-const cors = require("cors");
-require("./db/connection");
-const session = require("express-session");
-const passport = require("passport");
-const OAuth2Strategy = require("passport-google-oauth2").Strategy;
-const userdb = require("./model/userSchema")
-const Class = require("./model/classSchema");
-const Deadlines = require("./model/deadlinesSchema");
-// const Preferences = require("./model/preferencesSchema")
-const Notes = require("./model/notesSchema")
-const {quizdb, notesdb} = require("./model/quizSchema")
-const StudyPlan = require("./model/studyPlanSchema")
-const { OpenAI } = require('openai');
 
 let userId = ""
 app.use(cors({
@@ -147,12 +150,47 @@ app.get("/api/classes", async (req, res) => {
 
 // CREATE A CLASS
 app.post("/api/classes", async (req, res) => {
+    console.log("INSIDE POST CLASS IN SERVER")
+    console.log("REQ.BODY CONTAINS THE FOLLOWING: ", req.body)
     const { title, date, starttime, endtime, repeat } = req.body;
     try {
-        const classItem = await Class.create({ title, date, starttime, endtime, repeat, user: userId });
+
+        console.log("Incoming data:", {
+            title,
+            date,
+            starttime,
+            endtime,
+            repeat
+        });
+
+        //////////////////////////////////////////////////////////////
+        // Convert the date string to a Date object
+        const classDate = new Date(date);
+        console.log("CONVERTED DATE: ", classDate)
+        // Check if date conversion was successful
+        if (isNaN(classDate.getTime())) {
+            return res.status(400).json({ error: 'Invalid date format' });
+        }
+        //////////////////////////////////////////////////////////////
+
+        console.log("USERID IS ", userId)
+        let classItem;
+        //////////////////////////////////////////////////////////////
+        if (userId != ""){
+            console.log("UserId is not empty")
+            classItem = await Class.create({ title, date: classDate, starttime, endtime, repeat, user: userId });
+        } else {
+            console.log("UserId is empty")
+            classItem = await Class.create({ title, date: classDate, starttime, endtime, repeat});
+            console.log("classItem posted is : ", classItem)
+        }
+        //////////////////////////////////////////////////////////////
+
+        // const classItem = await Class.create({ title, date: classDate, starttime, endtime, repeat, user: userId });
         
         if (repeat) {
             const classDate = new Date(date);
+
             for (let i = 1; i <= 10; i++) {  // Repeat for the next 10 weeks
                 classDate.setDate(classDate.getDate() + 7);
                 const repeatedClass = new Class({ 
@@ -623,15 +661,31 @@ const parseQuiz = (quiz) => {
     return questions;
 }
 
-// app.get("/api/notes", async(req, res) => {
-//     try{
-//         const notes = await Notes.find({ user: userId });
-//         res.status(200).json(notes);
-//     } catch (error) {
-//         console.error('Error getting notes:', error);
-//         res.status(500).json({ message: 'Server error' });
-//     }
-// })
+app.get("/api/notes", async(req, res) => {
+    try{
+        const notes = await Notes.find({ user: userId });
+        res.status(200).json(notes);
+    } catch (error) {
+        console.error('Error getting notes:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+})
+
+app.get("/api/quiz/:noteId", async (req, res) => {
+    try {
+        const noteId = req.params.noteId;
+        const quiz = await quizdb.findOne({ notes: noteId }).populate('notes');
+        
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
+        res.status(200).json({ quiz });
+    } catch (error) {
+        console.error('Error retrieving quiz data:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 async function generateQuiz(notes) {
     console.log("Inside the generate quiz method")
@@ -681,3 +735,5 @@ async function generateQuiz(notes) {
 const server = app.listen(process.env.PORT, () => {
     console.log("Connected to MongoDB and listening on port", process.env.PORT);
 });
+
+export default app;

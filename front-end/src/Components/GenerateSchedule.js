@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import PomodoroTimer from './Timer';
 import "../style/generateSchedule.css"
@@ -11,6 +11,20 @@ function GenerateSchedule() {
     const [selectedDay, setSelectedDay] = useState(null);
     const [activeSession, setActiveSession] = useState(null);
     const { furhat, furhatConnected } = useFurhat();
+    
+    // Ref to track if the FocusTimer event has been sent
+    const hasSentFocusTimerRef = useRef(false);
+
+    useEffect(() => {
+        if (furhatConnected && furhat && !hasSentFocusTimerRef.current) {
+            furhat.send({
+                event_name: 'FocusTimer'
+            });
+            console.log("FocusTimer event sent successfully");
+            // Mark event as sent
+            hasSentFocusTimerRef.current = true;
+        }
+    }, [furhat, furhatConnected]);
 
     useEffect(() => {
         const checkSchedule = async () => {
@@ -91,15 +105,6 @@ function GenerateSchedule() {
             </div>
         );
     };
-
-    useEffect(() => {
-        if (furhatConnected && furhat) {
-            furhat.send({
-                event_name: 'FocusTimer'
-            });
-            console.log("FocusTimer event sent successfully")
-        }
-    }, [furhat, furhatConnected])
 
     return (
         <div className="session-container">

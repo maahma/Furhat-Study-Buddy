@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 console.log("INSIDE STUDYPLANSCHEMA!!!!!!!")
 
@@ -14,6 +14,6 @@ const generatedScheduleSchema = new mongoose.Schema({
     sessions: [sessionSchema]
 });
 
-const studyPlanSchema = mongoose.model('studyPlan', generatedScheduleSchema);
+const StudyPlan = mongoose.model('studyPlan', generatedScheduleSchema);
 
-module.exports = studyPlanSchema;
+export default StudyPlan;

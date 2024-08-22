@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const deadlineSchema = new mongoose.Schema({
     title: {
@@ -18,6 +18,6 @@ const deadlineSchema = new mongoose.Schema({
     },
 }, {timestamps: true});
 
-const deadlinedb = new mongoose.model("deadlines", deadlineSchema);
+const Deadlines = new mongoose.model("deadlines", deadlineSchema);
 
-module.exports = deadlinedb;
+export default Deadlines;
