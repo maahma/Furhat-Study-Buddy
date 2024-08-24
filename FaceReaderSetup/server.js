@@ -22,8 +22,6 @@ app.use(cors({
     origin: 'http://localhost:3000' // Allow requests only from the frontend running on port 3000
 }));
 
-const entries = [];
-
 // Function to format XML command
 const formatXMLCommand = (typeName, xmlMessage) => {
     let xmlMessageBytes = Buffer.from(xmlMessage, 'utf8');
@@ -57,6 +55,52 @@ const convertXMLToJSON = (xmlData) => {
         throw error;
     }
 };
+
+const stressRelatedEmotions = ['Sad', 'Angry', 'Scared', 'Disgusted'];
+let stressAccumulation = [];
+let lastInterventionTime = 0;
+const cooldownPeriod = 15 * 60 * 1000; // 15 minutes in milliseconds
+const interventionThreshold = 5; // threshold for stress score
+const pauseDuration = 3 * 60 * 1000; // 3 minutes in milliseconds
+
+const processEmotionFrame = (jsonData) => {
+    // const jsonData = JSON.parse(jsonData);
+
+    const state = jsonData?.Classification?.ClassificationValues?.ClassificationValue?.State?.string;
+    const analysisStartTime = jsonData?.Classification?.AnalysisStartTime;
+    const frameTimeTicks = jsonData?.Classification?.FrameTimeTicks;
+
+    if (state && analysisStartTime && frameTimeTicks) {
+        // Check if the state is a stress-related emotion
+        if (stressRelatedEmotions.includes(state)) {
+            stressAccumulation.push({
+                State: state,
+                AnalysisStartTime: analysisStartTime,
+                FrameTimeTicks: frameTimeTicks
+            });
+        }
+    }
+
+    // Check if enough time has passed since the last intervention
+    const currentTime = new Date().getTime();
+    if (currentTime - lastInterventionTime >= cooldownPeriod) {
+        analyzeStressAccumulation();
+    }
+
+    return stressAccumulation
+}
+
+// Function to analyze stress accumulation and trigger an intervention if necessary
+function analyzeStressAccumulation() {
+    const stressScore = stressAccumulation.length;
+
+    if (stressScore >= interventionThreshold) {
+        console.log("Send calming activity event to Furhat")
+        stressAccumulation = []; // Reset after intervention
+        lastInterventionTime = new Date().getTime(); // Update the last intervention time
+    }
+}
+
 
 // Function to send XML command to FaceReader and handle response
 const sendXMLCommandToFaceReader = (typeName, xmlCommand, onData) => {
@@ -112,8 +156,9 @@ app.post('/startAnalyzing', async (req, res) => {
     try {
         await sendXMLCommandToFaceReader(actionTypeName, startAnalyzingCommandXML);
         await sendXMLCommandToFaceReader(actionTypeName, startReceivingDetailedLogs, (xmlLogs) => {
-            console.log('Detailed log received:', xmlLogs);
+            // console.log('Detailed log received:', xmlLogs);
             const json = convertXMLToJSON(xmlLogs);
+            console.log(processEmotionFrame(json));
         });
         res.send('FaceReader started analyzing and getting detailed logs.');
     } catch (error) {
@@ -149,66 +194,3 @@ app.post('/stopAnalyzing', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Node.js server running on port ${PORT}`);
 });
-
-
-
-
-
-
-
-
-
-
-//////////////////////// WORKING FINE ///////////////////////////////////
-// Define the message type name
-// const typeName = 'FaceReaderAPI.Messages.ActionMessage';
-// let startAnalyzingCommandXML = '<?xml version="1.0" encoding="utf-8"?>\n'
-// + '<ActionMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n'
-// + '<Id>ID02</Id>\n'
-// + '<ActionType>FaceReader_Start_Analyzing</ActionType>\n'
-// + '</ActionMessage>\n';
-
-// const xmlMessageBytes = Buffer.from(startAnalyzingCommandXML, 'utf8');
-// const typeNameBytes = Buffer.from(typeName, 'utf8');
-
-// const typeNameLength = typeNameBytes.length;
-// const xmlMessageLength = xmlMessageBytes.length;
-
-// const messageBytesLength = 4 + typeNameLength + xmlMessageLength;
-// const packageBytesLength = messageBytesLength + 4;
-
-// const packageBytes = Buffer.alloc(packageBytesLength);
-
-// packageBytes.writeUInt32LE(packageBytesLength, 0);
-// packageBytes.writeUInt32LE(typeNameLength, 4);
-// typeNameBytes.copy(packageBytes, 8);
-// xmlMessageBytes.copy(packageBytes, 8 + typeNameLength);
-
-// Connect to FaceReader
-// client.connect(FACE_READER_PORT, FACE_READER_HOST, () => {
-//     console.log('Connected to FaceReader server.');
-
-//     let packageBytes = formatXMLCommand(typeName, startAnalyzingCommandXML)
-//     client.write(packageBytes, () => {
-//         console.log('Message sent to FaceReader');
-//         client.end();
-//     });
-// });
-
-// // Handle data received from FaceReader
-// client.on('data', (data) => {
-//     console.log('Received data from FaceReader:', data.toString());
-// });
-
-// client.on('end', () => {
-//     console.log('Connection ended.');
-// });
-
-// client.on('error', (err) => {
-//     console.error('Connection error:', err.message);
-// });
-
-// app.listen(PORT, () => {
-//     console.log(`Node.js server running on port ${PORT}`);
-// });
-//////////////////////// WORKING FINE ///////////////////////////////////
