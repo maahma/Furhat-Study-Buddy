@@ -77,11 +77,24 @@ import React, { useState, useEffect } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import "../style/timer.css"
-
+import axios from 'axios';
 
 function PomodoroTimer({ task, isActive, onTimerEnd }) {
     const [time, setTime] = useState(3000); // 50 minutes in seconds
     const [isRunning, setIsRunning] = useState(false);
+
+
+    const startFaceReaderAnalysis = () => {
+        axios.post('http://localhost:5051/startAnalyzing')
+            .then(response => console.log(response.data))
+            .catch(error => console.error('Error starting analysis:', error));
+    };
+
+    const stopFaceReaderAnalysis = () => {
+        axios.post('http://localhost:5051/stopAnalyzing')
+            .then(response => console.log(response.data))
+            .catch(error => console.error('Error stopping analysis:', error));
+    };
 
     useEffect(() => {
         let timer = null;
@@ -90,6 +103,7 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
         } else if (time === 0) {
             onTimerEnd();
             clearInterval(timer);
+            stopFaceReaderAnalysis(); // Stop FaceReader when time ends
         }
 
         return () => clearInterval(timer);
@@ -102,8 +116,16 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
         }
     }, [isActive]);
 
-    const startTimer = () => setIsRunning(true);
-    const stopTimer = () => setIsRunning(false);
+    const startTimer = () => {
+        setIsRunning(true);
+        startFaceReaderAnalysis(); // Start FaceReader when timer starts
+    }
+
+    const stopTimer = () => {
+        setIsRunning(false);
+        stopFaceReaderAnalysis(); // Stop FaceReader when timer pauses/stops
+    }
+
     const resetTimer = () => {
         setIsRunning(false);
         setTime(3000);

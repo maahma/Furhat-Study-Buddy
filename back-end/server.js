@@ -390,6 +390,7 @@ const getStartAndEndOfNext7Days = () => {
     const endDate = new Date(today);
     endDate.setDate(today.getDate() + 6); // +6 days to cover a full week
 
+    console.log("Start date: ", startDate, "End date: ", endDate)
     return { startDate, endDate };
 };
 
@@ -535,7 +536,7 @@ app.post('/api/studyPlan', async (req, res) => {
         // }
 
         // console.log("PREFERENCES FOUND : ", preferences)
-
+        console.log("INSIDE STUDY PLAN API ENDPOINT")
         const { classes } = await getNext7DaysData();
         const deadlines = await Deadlines.find({ user: userId });
         
@@ -558,11 +559,15 @@ app.post('/api/studyPlan', async (req, res) => {
             }))
         }));        
 
+        // Log the fully expanded study plans before saving
+        console.log("Study Plans to be saved:", JSON.stringify(studyPlans, null, 2));
+
         const savedPlans = await StudyPlan.create(studyPlans)
 
         console.log("PLAN SAVED SUCCESSFULLY")
         res.status(200).json(savedPlans);
     } catch (error) {
+        console.log("PLAN NOT SAVED. TRY AGAIN")
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -582,7 +587,8 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
     try {
         // Calculate the start and end dates of the current week
         const { startDate, endDate } = getStartAndEndOfNext7Days();
-
+        console.log("user id inside check-current-week is ", userId)
+        console.log("Start and end dates are : ", startDate, endDate)
         // Fetch the study plans for the current week
         const schedule = await StudyPlan.find({
             user: userId,
