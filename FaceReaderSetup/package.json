@@ -14,8 +14,10 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-xml-bodyparser": "^0.3.0",
+    "fast-xml-parser": "^4.4.1",
     "longjohn": "^0.2.12",
     "net": "^1.0.2",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "xml2json": "^0.12.0"
   }
 }

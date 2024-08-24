@@ -4,6 +4,10 @@ const net = require('net');
 const axios = require('axios');
 const xmlparser = require('express-xml-bodyparser');
 const cors = require('cors');
+const xml2js = require('xml2js');
+var parser = require('xml2json');
+const { XMLParser } = require('fast-xml-parser');
+
 
 const app = express();
 const PORT = 5051; // Port for Node.js server
@@ -18,6 +22,7 @@ app.use(cors({
     origin: 'http://localhost:3000' // Allow requests only from the frontend running on port 3000
 }));
 
+const entries = [];
 
 // Function to format XML command
 const formatXMLCommand = (typeName, xmlMessage) => {
@@ -40,6 +45,19 @@ const formatXMLCommand = (typeName, xmlMessage) => {
     return packageBytes;
 }
 
+// Function to convert XML to JSON
+const convertXMLToJSON = (xmlData) => {
+    const parser = new XMLParser();
+    try {
+        const json = parser.parse(xmlData);
+        console.log("Converted JSON:", JSON.stringify(json, null, 2));
+        return json;
+    } catch (error) {
+        console.error("Error converting XML to JSON:", error);
+        throw error;
+    }
+};
+
 // Function to send XML command to FaceReader and handle response
 const sendXMLCommandToFaceReader = (typeName, xmlCommand, onData) => {
     return new Promise((resolve, reject) => {
@@ -53,15 +71,14 @@ const sendXMLCommandToFaceReader = (typeName, xmlCommand, onData) => {
             });
         });
 
-        client.on('data', (data) => {
+        client.on('data', async (data) => {
             const receivedData = data.toString();
-            console.log("Received data from FaceReader")
-            console.log(receivedData)
+            // console.log("Received data from FaceReader")
+            // console.log(receivedData)
 
             if (onData) {
                 onData(receivedData);
             }
-
             resolve(receivedData);
         });
 
@@ -87,15 +104,16 @@ app.post('/startAnalyzing', async (req, res) => {
     const startReceivingDetailedLogs = '<?xml version="1.0" encoding="utf-8"?>\n'
         + '<ActionMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n'
         + '<Id>ID02</Id>\n'
-        + '<ActionType>FaceReader_Start_DetailedLogSending</ActionType>\n'
+        + '<ActionType>FaceReader_Start_StateLogSending</ActionType>\n'
         + '</ActionMessage>\n';
 
     const actionTypeName = 'FaceReaderAPI.Messages.ActionMessage';
 
     try {
         await sendXMLCommandToFaceReader(actionTypeName, startAnalyzingCommandXML);
-        await sendXMLCommandToFaceReader(actionTypeName, startReceivingDetailedLogs, (log) => {
-            console.log('Detailed log received:', log);
+        await sendXMLCommandToFaceReader(actionTypeName, startReceivingDetailedLogs, (xmlLogs) => {
+            console.log('Detailed log received:', xmlLogs);
+            const json = convertXMLToJSON(xmlLogs);
         });
         res.send('FaceReader started analyzing and getting detailed logs.');
     } catch (error) {
@@ -114,7 +132,7 @@ app.post('/stopAnalyzing', async (req, res) => {
     const stopReceivingDetailedLogs = '<?xml version="1.0" encoding="utf-8"?>\n'
         + '<ActionMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n'
         + '<Id>ID04</Id>\n'
-        + '<ActionType>FaceReader_Stop_DetailedLogSending</ActionType>\n'
+        + '<ActionType>FaceReader_Stop_StateLogSending</ActionType>\n'
         + '</ActionMessage>\n';
 
     const actionTypeName = 'FaceReaderAPI.Messages.ActionMessage';
