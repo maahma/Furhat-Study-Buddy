@@ -5,14 +5,13 @@ import furhatos.event.senses.SenseSkillGUIConnected
 import furhatos.records.Record
 import furhatos.app.furgui.flow.*
 import furhatos.app.furgui.*
-//import kotlinx.serialization.*
-//import kotlinx.serialization.json.*
 
 val GREET_USER = "GreetUser"
 val DASHBOARD_LOADED = "DashboardLoaded"
 val FOCUS_TIMER = "FocusTimer"
 val QUIZ_PAGE = "QuizPage"
 val QUIZ_ME = "QuizMe"
+val CALMING_ACTIVITY = "CalmingActivity"
 
 val Parent: State = state {
 
@@ -49,7 +48,7 @@ val Parent: State = state {
         send(SPEECH_DONE)
     }
 
-    onEvent("QuizMe") {
+    onEvent(QUIZ_ME) {
         val recordList = it.get("data") as? List<Record>
 //        furhat.say("Question list received")
 
@@ -75,12 +74,16 @@ val Parent: State = state {
                 }
             }
 
-            furhat.say("Question Data populated")
+//            furhat.say("Question Data populated")
             furhat.say("Let's start the quiz!")
             goto(QuizState)
         } else {
             furhat.say("Failed to retrieve quiz questions.")
             send(SPEECH_DONE)
         }
+    }
+
+    onEvent(CALMING_ACTIVITY) {
+        goto(CalmingActivity)
     }
 }

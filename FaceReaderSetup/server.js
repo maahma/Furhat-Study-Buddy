@@ -4,23 +4,38 @@ const net = require('net');
 const axios = require('axios');
 const xmlparser = require('express-xml-bodyparser');
 const cors = require('cors');
-const xml2js = require('xml2js');
-var parser = require('xml2json');
 const { XMLParser } = require('fast-xml-parser');
-
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
 const PORT = 5051; // Port for Node.js server
 const FACE_READER_PORT = 9090; // Port where FaceReader is listening
 const FACE_READER_HOST = '127.0.0.1'; // Address where FaceReader is running
 
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST']
+    }
+});
+
 // Middleware
 app.use(bodyParser.json());
 app.use(xmlparser());
-
 app.use(cors({
     origin: 'http://localhost:3000' // Allow requests only from the frontend running on port 3000
 }));
+
+// WebSocket event handler
+io.on('connection', (socket) => {
+    console.log('A client connected');
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
+
 
 // Function to format XML command
 const formatXMLCommand = (typeName, xmlMessage) => {
@@ -95,7 +110,8 @@ function analyzeStressAccumulation() {
     const stressScore = stressAccumulation.length;
 
     if (stressScore >= interventionThreshold) {
-        console.log("Send calming activity event to Furhat")
+        // Send event to React frontend which will send it to Furhat
+        io.emit('furhatEvent', { message: 'Calming activity needed' });
         stressAccumulation = []; // Reset after intervention
         lastInterventionTime = new Date().getTime(); // Update the last intervention time
     }
@@ -191,6 +207,10 @@ app.post('/stopAnalyzing', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+// app.listen(PORT, () => {
+//     console.log(`Node.js server running on port ${PORT}`);
+// });
+
+server.listen(PORT, () => {
     console.log(`Node.js server running on port ${PORT}`);
 });
