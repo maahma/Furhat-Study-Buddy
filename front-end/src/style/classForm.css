@@ -10,6 +10,8 @@
     box-shadow:0 4px 10px 4px rgba(#13232f,.3);
     border: 1px solid black;
     background-color: white;
+    margin-left: auto; 
+    margin-right: 20px;
 }
 
 .form-group{

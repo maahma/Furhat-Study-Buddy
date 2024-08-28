@@ -50,31 +50,21 @@ val Parent: State = state {
 
     onEvent(QUIZ_ME) {
         val recordList = it.get("data") as? List<Record>
-//        furhat.say("Question list received")
 
         if (recordList != null) {
-//            furhat.say("Now mapping questions list")
-//            furhat.say("Received ${recordList.size} questions.")
-
             // Convert the list of Records to a list of QuestionData
             quizQuestions = recordList.mapNotNull { record ->
                 // Convert Record to Map
                 val questionText = record["questionText"] as? String
                 val answerText = record["answerText"] as? String
 
-//                furhat.say("Processing a question map: $record")
-//                furhat.say("Question text is : $questionText")
-//                furhat.say("Answer text is : $answerText")
-
                 if (questionText != null && answerText != null) {
-//                    furhat.say("question and answer text not null")
                     QuestionData(questionText, answerText)
                 } else {
                     null
                 }
             }
 
-//            furhat.say("Question Data populated")
             furhat.say("Let's start the quiz!")
             goto(QuizState)
         } else {

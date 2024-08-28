@@ -3,7 +3,7 @@ package furhatos.app.furgui
 import furhatos.flow.kotlin.*
 import kotlinx.coroutines.runBlocking
 
-val EmotionRegulation: State = state {
+val EmotionRegulation = state {
 
     val openAISerenityAssistant = openAICalmingExercises()
     var startTime: Long = 0

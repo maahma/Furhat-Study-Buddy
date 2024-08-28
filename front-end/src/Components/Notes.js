@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useFurhat } from '../Context/FurhatContext';
+import "../style/notes.css"
 
 const Notes = () => {
     const [notes, setNotes] = useState('')
@@ -41,8 +42,6 @@ const Notes = () => {
             const response = await axios.get(`http://localhost:6005/api/quiz/${noteId}`, { withCredentials: true });
             const quizData = response.data.quiz;
 
-            console.log("QuizData inside handleQuizMe is ", quizData)
-
             const formattedQuestions = quizData.questions.map(question => ({
                 questionText: question.questionText,
                 answerText: question.answer.answerText
@@ -50,15 +49,12 @@ const Notes = () => {
     
             console.log("formattedQuestions inside handleQuizMe is ", formattedQuestions)
 
-            // if (furhatConnected && furhat) {
-                furhat.send({
-                    event_name: 'QuizMe',
-                    data: formattedQuestions
-                });
-                console.log("QuizMe event sent successfully");
-            // } else {
-            //     console.log("Furhat is not connected in the Quiz component");
-            // }
+            furhat.send({
+                event_name: 'QuizMe',
+                data: formattedQuestions
+            });
+            console.log("QuizMe event sent successfully");
+
         } catch (error) {
             console.error('Error retrieving quiz data:', error);
             setError('Failed to retrieve quiz data');
@@ -90,15 +86,12 @@ const Notes = () => {
     
             console.log("formattedQuestions inside handleQuizMe is ", formattedQuestions)
 
-            // if (furhatConnected && furhat) {
-                furhat.send({
-                    event_name: 'QuizMe',
-                    data: formattedQuestions
-                });
-                console.log("QuizMe event sent successfully");
-            // } else {
-            //     console.log("Furhat is not connected in the Quiz component");
-            // }
+            furhat.send({
+                event_name: 'QuizMe',
+                data: formattedQuestions
+            });
+            console.log("QuizMe event sent successfully");
+
         } catch (error) {
             console.error('Error posting notes:', error);
         }

@@ -7,24 +7,19 @@ import "../style/weeklyCalendar.css";
 
 const Calendar = () => {
   const [startDate, setStartDate] = useState(new Date());
-  // const [classes, setClasses] = useState([]);
   const { classes, dispatch } = useContext(ClassesContext);
 
   // Fetch classes from the server
   const fetchClasses = async () => {
-    // console.log("INSIDE FETCH CLASSES")
     try {
       const start = startOfWeek(startDate, { weekStartsOn: 1 }); // Monday start
       const endDate = endOfWeek(startDate, { weekStartsOn: 1 }); // End of the current week
-      // console.log("start: ", start)
-      // console.log("endDate: ", endDate)
       const response = await axios.get('http://localhost:6005/api/classes', {
         params: {
           startDate: start.toISOString(),
           endDate: endDate.toISOString(),
         },
       });
-      // setClasses(response.data);
       dispatch({ type: 'SET_CLASSES', payload: response.data });
       console.log('Fetched classes are:', classes);
     } catch (error) {
@@ -44,7 +39,6 @@ const Calendar = () => {
     end: weekEnd,
   });
 
-  // console.log("weekDays: ", weekDays)
 
   const handleNextWeek = () => {
     setStartDate(addWeeks(startDate, 1));
@@ -56,7 +50,6 @@ const Calendar = () => {
 
   return (
     <>
-    {/* <div className="calendar-container"> */}
       <div className="calendar-header">
         <button className="previous-week" onClick={handlePreviousWeek}><img src="/images/left-arrow.png" alt="left-arrow" /></button>
         <h2 className='calendar-date'>{format(weekStart, 'MMMM yyyy')}</h2>
@@ -64,20 +57,12 @@ const Calendar = () => {
       </div>
       <div className="calendar-grid">
         {weekDays.map((day) => {
-          // console.log("HERE INSIDE THE WEEKDAYS MAP")
-          // console.log("weekDays inside map: ", weekDays)
-          // console.log("day inside map: ", day)
-          // console.log("classes inside map: ", classes)
           const dayClasses = classes.filter(
             (classItem) => {
               const classDate = new Date(classItem.date);
-              // console.log("classDate inside map filter: ", classDate)
-              // console.log("day.toDateString(): ", day.toDateString());
-              // console.log("classDate.toDateString(): ", classDate.toDateString());
               return classDate.toDateString() === day.toDateString();
             }
           );
-          // console.log("dayClasses: ", dayClasses)
           
           return (
             <div key={day.toDateString()} className="calendar-day">
@@ -100,7 +85,6 @@ const Calendar = () => {
           );
         })}
       </div>
-    {/* </div> */}
     </>
   );
 };

@@ -54,15 +54,12 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
         socket.on('furhatEvent', (data) => {
             console.log('Received event from server:', data.message);
             console.log("SEND EVENT TO FURHAT FROM TIMER COMPONENT")
-            useEffect(() => {
-                if (furhatConnected && furhat) {
-                    furhat.send({
-                        event_name: 'CalmingActivity'
-                    });
-                    console.log("Calming activity event sent successfully");
-                }
-            }, [furhat, furhatConnected]);
-        
+            if (furhatConnected && furhat) {
+                furhat.send({
+                    event_name: 'CalmingActivity'
+                });
+                console.log("Calming activity event sent successfully");
+            }
         });
 
         return () => {
@@ -104,7 +101,6 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
         <div className="pomodoro-timer">
             <h4>{task}</h4>
             <div className="timer">
-                {/* <span>{formatTime(time)}</span> */}
                 <CircularProgressbar
                     value={percentage}
                     text={formatTime(time)}
@@ -118,8 +114,8 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
                 />
             </div>
             <div className="controls">
-                {!isRunning ? <button onClick={startTimer}>Start</button> : <button onClick={stopTimer}>Pause</button>}
-                <button onClick={resetTimer}>Reset</button>
+                {!isRunning ? <button onClick={startTimer} className="start-btn">Start</button> : <button onClick={stopTimer} className="stop-btn">Pause</button>}
+                <button onClick={resetTimer} className="reset-btn">Reset</button>
             </div>
         </div>
     );

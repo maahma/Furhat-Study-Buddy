@@ -1,0 +1,142 @@
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500,700&display=swap");
+
+.notes-form {
+    max-width: 600px;
+    margin: 40px auto;
+    font-family: 'DM Sans', sans-serif;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notes-form h3 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.create {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+textarea:focus {
+    border-color: #2c3e50;
+    outline: none;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: #e74c3c;
+    background-color: #fce4e4;
+    padding: 10px;
+    border: 1px solid #e74c3c;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.notes-list {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notes-list ul {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0;
+    width: 100%; 
+}
+
+.notes-list h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.note-item {
+    background-color: #ecf0f1;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+}
+
+.note-preview {
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.note-item button {
+    background-color: #2ecc71;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.note-item button:hover {
+    background-color: #27ae60;
+}
+
+.quiz-container {
+    margin-top: 30px;
+}
+
+.quiz-container h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #8e44ad;
+}
+
+.quiz-item {
+    background-color: #f0f3f4;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.question {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.answer {
+    color: #16a085;
+}

@@ -1,6 +1,6 @@
 package furhatos.app.furgui
 
-import com.theokanning.openai.service.OpenAiService
+import com.theokanning.openai.OpenAiService
 import com.theokanning.openai.completion.CompletionRequest
 import com.theokanning.openai.completion.CompletionResult
 import kotlinx.coroutines.runBlocking
@@ -26,7 +26,7 @@ class openAICalmingExercises {
             .frequencyPenalty(frequencyPenalty)
             .presencePenalty(presencePenalty)
             .prompt(prompt)
-            .model("gpt-4") // Assuming you want to use the standard GPT-4 model
+            .model("gpt-3.5-turbo-instruct")
             .build()
 
         val result = runBlocking {

@@ -8,7 +8,7 @@ export const FurhatContextProvider = ({ children }) => {
     const [furhatConnected, setFurhatConnected] = useState(false);
     const address =  'localhost' // FOR SDK
     const portNumber = 8080      // FOR SDK 
-    // const address =  '192.168.137.55'  // FOR ROBOT
+    // const address =  '192.168.137.203'  // FOR ROBOT
     // const portNumber = 80;             // FOR ROBOT
 
     useEffect(() => {
