@@ -5,22 +5,26 @@ import furhatos.flow.kotlin.*
 import furhatos.gestures.Gestures
 import furhatos.app.furgui.gestures.*
 
-val BreathingExerciseState: State = state {
+val BreathingExerciseState: State = state(parent = Parent) {
 
     onEntry {
         furhat.say("Let's begin with a simple breathing exercise. Breathe in deeply through your nose.")
         furhat.gesture(InhaleGesture)
-        furhat.say("Hold it for a moment.")
-        furhat.say("Now, slowly breathe out through your mouth.")
+        furhat.say("Hold it for a moment.", async = true)
+        delay(3000)  // Hold inhale posture for 3 seconds
+        furhat.say("Now, slowly breathe out through your mouth.", async = true)
         furhat.gesture(ExhaleGesture)
+        delay(3000)  // Hold exhale posture for 3 seconds
 
         furhat.say("Let's repeat this a few times.")
 
         repeat(3) {
-            furhat.say("Breathe in.")
+            furhat.say("Breathe in and hold it.", async = true)
             furhat.gesture(InhaleGesture)
-            furhat.say("And out.")
+            delay(3000)  // Hold inhale posture for 3 seconds
+            furhat.say("And out.", async = true)
             furhat.gesture(ExhaleGesture)
+            delay(3000)  // Hold exhale posture for 3 seconds
         }
 
         furhat.say("Great job. Let's continue with your study session now.")

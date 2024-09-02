@@ -13,13 +13,15 @@ val CalmingActivity: State = state(parent = Parent) {
 
     onEntry {
         furhat.say("Let's do a calming activity together.")
+//        goto(BreathingExerciseState)
+//        goto(EmotionRegulation)
 
-        val activity = Random.nextInt(3)
-
+        val activity = Random.nextInt(2)
+//
         when (activity) {
             0 -> goto(BreathingExerciseState)
             1 -> goto(EmotionRegulation)
-            2 -> goto(GratitudeReflection)
+//            2 -> goto(GratitudeReflection)
         }
 
         furhat.say("I hope you feel more relaxed now.")

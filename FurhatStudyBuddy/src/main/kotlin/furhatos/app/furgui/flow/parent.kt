@@ -5,6 +5,7 @@ import furhatos.event.senses.SenseSkillGUIConnected
 import furhatos.records.Record
 import furhatos.app.furgui.flow.*
 import furhatos.app.furgui.*
+import furhatos.gestures.Gestures
 
 val GREET_USER = "GreetUser"
 val DASHBOARD_LOADED = "DashboardLoaded"
@@ -39,7 +40,9 @@ val Parent: State = state {
     }
 
     onEvent(FOCUS_TIMER) {
-        furhat.say("You can generate a schedule on this page and start a study session. I’ll be with you throughout the session to help manage your mood by offering to do calming activities if I sense that you're feeling overwhelmed.")
+        furhat.say("You can generate a schedule on this page and start a study session.")
+        furhat.say("I'll be right here with you, helping to keep things calm, and offering relaxing activities if I notice you're feeling a bit stressed.")
+        furhat.gesture(Gestures.Smile)
         send(SPEECH_DONE)
     }
 

@@ -1,9 +1,10 @@
 package furhatos.app.furgui
 
 import furhatos.flow.kotlin.*
+import furhatos.app.furgui.flow.Parent
 import kotlinx.coroutines.runBlocking
 
-val GratitudeReflection: State = state {
+val GratitudeReflection: State = state(parent = Parent) {
 
     val openAISerenityAssistant = openAICalmingExercises()
     var startTime: Long = 0

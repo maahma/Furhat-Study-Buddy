@@ -6,7 +6,7 @@ import furhatos.gestures.Gestures
 
 val InhaleGesture = _defineGesture("InhaleGesture") {
     // Closing the eyes
-    frame(0.1, persist = true) {
+    frame(0.3, persist = true) {
         BasicParams.BLINK_RIGHT to 1.0
         BasicParams.BLINK_LEFT to 1.0
     }
@@ -17,7 +17,7 @@ val InhaleGesture = _defineGesture("InhaleGesture") {
         BasicParams.NECK_TILT to -14.0
     }
 
-    frame(0.7){
+    frame(3.35){
         BasicParams.NECK_TILT to -14.0
     }
 }

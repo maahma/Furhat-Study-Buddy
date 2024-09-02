@@ -1,17 +1,21 @@
 package furhatos.app.furgui
 
 import furhatos.flow.kotlin.*
-import furhatos.gestures.Gestures
+import furhatos.app.furgui.flow.*
 import furhatos.records.User
-import furhatos.util.*
+import furhatos.util.Language
+import furhatos.gestures.Gestures
 
 // Variable to keep track of the current question index
 var currentQuestionIndex = 0
 val incorrectQuestions = mutableListOf<QuestionData>()
+val skippedQuestions = mutableListOf<QuestionData>()
+var inReviewSession = false
 
-val QuizState = state {
+val QuizState: State  = state(parent = Parent) {
     onEntry {
         currentQuestionIndex = 0 // Reset the question index when starting the quiz
+        furhat.say("I will quiz you on 20 questions. You can say 'skip' to skip a question and if you don't know the answer, you can say 'I don't know'. At the end, I will quiz you again on questions you got incorrect or skipped. You can say 'stop' anytime to stop the quiz.")
         reentry() // Start asking questions
     }
 
@@ -22,17 +26,56 @@ val QuizState = state {
             furhat.ask(question.questionText)
         } else {
             // All questions have been asked
-            if (incorrectQuestions.isNotEmpty()) {
-                furhat.say("Let's go over the questions you missed.")
-                quizQuestions = incorrectQuestions
-                incorrectQuestions.clear()
-                currentQuestionIndex = 0
-                reentry() // Restart the quiz with incorrect questions
+            if (skippedQuestions.isNotEmpty() || incorrectQuestions.isNotEmpty()) {
+                furhat.ask("You've completed the quiz. Would you like to go over the questions you skipped or got wrong?")
             } else {
                 furhat.say("Great job! You've completed the quiz.")
                 send(SPEECH_DONE) // Indicate the end of the quiz
             }
         }
+    }
+
+    onResponse<Yes> {
+        // Combine skipped and incorrect questions to form the new quizQuestions list
+        quizQuestions = skippedQuestions + incorrectQuestions
+        skippedQuestions.clear()
+        incorrectQuestions.clear()
+        currentQuestionIndex = 0
+        furhat.say("Let's go over the questions you missed.")
+        reentry() // This re-enters QuizState and starts over
+    }
+
+    onResponse<No> {
+        furhat.say("Okay, we won't review the skipped or incorrect questions. Good job on completing the quiz!")
+        send(SPEECH_DONE) // Indicate the end of the quiz
+    }
+
+    onResponse<RequestRepeatQuestion> {
+        furhat.ask(quizQuestions[currentQuestionIndex].questionText) // Repeat the question
+    }
+
+    onResponse<RequestRules> {
+        furhat.say("You can say 'skip' to skip a question, 'I don't know' if you're unsure of the answer, and 'stop' to end the quiz at any time.")
+        reentry()
+    }
+
+    onResponse<DontKnow> {
+        furhat.say("No problem. We'll come back to this question later.")
+        skippedQuestions.add(quizQuestions[currentQuestionIndex])
+        currentQuestionIndex++
+        reentry()
+    }
+
+    onResponse<SkipQuestion> {
+        furhat.say("Alright, let's skip this one.")
+        skippedQuestions.add(quizQuestions[currentQuestionIndex])
+        currentQuestionIndex++
+        reentry()
+    }
+
+    onResponse<StopQuiz> {
+        furhat.say("Okay, stopping the quiz. We can continue later if you want.")
+        send(SPEECH_DONE) // Indicate the end of the quiz
     }
 
     onResponse {
@@ -41,22 +84,21 @@ val QuizState = state {
 
         // Check for an exact match first
         if (userAnswer.equals(correctAnswer, ignoreCase = true)) {
+            furhat.gesture(Gestures.Smile)
             furhat.say("That's correct!")
         } else {
-            furhat.say("User's answer is $userAnswer and correct answer is $correctAnswer")
-            furhat.say("Comparing user answer and correct answer using OpenAI")
             // Create an instance of OpenAIQuizAssistant to call the method
             val quizAssistant = OpenAIQuizAssistant()
 
             // Use OpenAI to check if the answer is close to the correct answer
             val isClose = quizAssistant.isAnswerClose(userAnswer, correctAnswer)
-            furhat.say("OpenAI returns $isClose")
-
 
             if (isClose) {
+                furhat.gesture(Gestures.Smile)
                 furhat.say("That's close enough!")
             } else {
-                furhat.say("Sorry, the correct answer is $correctAnswer.")
+                furhat.gesture(Gestures.BrowFrown)
+                furhat.say("Sorry, you answered $userAnswer, but the correct answer is $correctAnswer.")
                 incorrectQuestions.add(quizQuestions[currentQuestionIndex])
             }
         }
@@ -65,3 +107,4 @@ val QuizState = state {
         reentry() // Move to the next question
     }
 }
+

@@ -12,7 +12,7 @@ private val service = OpenAiService(SERVICE_KEY)
 
 class openAICalmingExercises {
     private val temperature = 0.5
-    private val maxTokens = 50
+    private val maxTokens = 100
     private val topP = 1.0
     private val frequencyPenalty = 0.0
     private val presencePenalty = 0.0
