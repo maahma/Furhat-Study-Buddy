@@ -15,6 +15,15 @@ val Greeting: State = state(Parent) {
         furhat.gesture(Gestures.Smile)
 
         //////// JUST TESTING DELETE LATER
+//        furhat.gesture(LookingAway)
+//        val checking = utterance {
+//            +"Hmm,"
+//            + LookingAway
+//            +"Let me check your answer"
+//            + delay(9000)
+//        }
+//
+//        furhat.say(checking)
 //        goto(GratitudeReflection)
 //        goto(EmotionRegulation)
         //////// JUST TESTING DELETE LATER

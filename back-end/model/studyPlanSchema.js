@@ -5,7 +5,7 @@ console.log("INSIDE STUDYPLANSCHEMA!!!!!!!")
 const sessionSchema = new mongoose.Schema({
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
-    task: { type: String }
+    task: { type: String, required: true }
 });
   
 const generatedScheduleSchema = new mongoose.Schema({

@@ -31,8 +31,12 @@ val GratitudeReflection: State = state(parent = Parent) {
     onResponse {
         val userResponse = it.text
 
-        furhat.gesture(LookingAway)
-        furhat.say("Hmm")
+        val thinking = utterance {
+            +"Hmm,"
+            + LookingAway
+            +"Let me think"
+            + delay(9000)
+        }
 
         val followUpPrompt = """
             You are a supportive and empathetic well-being assistant engaging in a conversation with a student.
@@ -41,6 +45,8 @@ val GratitudeReflection: State = state(parent = Parent) {
             Avoid starting your response with "just respond" or similar phrases, avoid greeting the student every time you respond, and avoid saying [student's name] or similar phrases.
             Ensure your response shows that you value the student's feelings and are here to support them.
             """.trimIndent()
+
+        furhat.say(thinking)
 
         val followUpResponse = openAISerenityAssistant.generatePromptResponse(followUpPrompt)
 
@@ -58,11 +64,14 @@ val GratitudeReflection: State = state(parent = Parent) {
 
     onResponse<StopSession> {
         furhat.say("It's okay if you don't want to talk right now! Let's get back to your study session. Remember, I'm here if you need me.")
+        furhat.gesture(Gestures.Smile)
         send(SPEECH_DONE)
     }
 
     onNoResponse {
-        furhat.say("It's okay if you don't want to talk right now. I'm here whenever you're ready.")
+        furhat.say("It's okay if you don't want to talk right now.")
+        furhat.gesture(Gestures.Smile)
+        furhat.say("I'll check in with you again")
         send(SPEECH_DONE)
     }
 }

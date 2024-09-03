@@ -5,6 +5,7 @@ import furhatos.event.senses.SenseSkillGUIConnected
 import furhatos.records.Record
 import furhatos.app.furgui.flow.*
 import furhatos.app.furgui.*
+import furhatos.app.furgui.gestures.LookingAway
 import furhatos.gestures.Gestures
 
 val GREET_USER = "GreetUser"
@@ -53,6 +54,13 @@ val Parent: State = state {
 
     onEvent(QUIZ_ME) {
         val recordList = it.get("data") as? List<Record>
+
+
+        furhat.gesture(LookingAway)
+        furhat.say({
+            +"Hmm"
+            +delay(2000)
+            +"let me make the quiz"})
 
         if (recordList != null) {
             // Convert the list of Records to a list of QuestionData

@@ -20,7 +20,7 @@ class OpenAIQuizAssistant {
 
     fun isAnswerClose(userAnswer: String, correctAnswer: String): Boolean {
         val prompt = """
-            You are a helpful quiz assistant. Compare the user's answer with the correct answer and determine if they are essentially the same in meaning, even if worded differently. Ignore any grammar errors in user's answers.
+            You are a helpful quiz assistant. Compare the user's answer with the correct answer and determine if they are the same in meaning. Ignore any grammar errors in user's answers.
             User's Answer: "$userAnswer"
             Correct Answer: "$correctAnswer
             

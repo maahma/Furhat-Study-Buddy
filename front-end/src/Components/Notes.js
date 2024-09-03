@@ -137,7 +137,7 @@ const Notes = () => {
             
 
             {/* Display the quiz if it exists */}
-            {quiz && (
+            {/* {quiz && (
                 <div className="quiz-container">
                     <h3>Generated Quiz</h3>
                     <ul>
@@ -149,7 +149,7 @@ const Notes = () => {
                         ))}
                     </ul>
                 </div>
-            )}
+            )} */}
 
         </div>
     );

@@ -150,8 +150,8 @@ app.get("/api/classes", async (req, res) => {
 
 // CREATE A CLASS
 app.post("/api/classes", async (req, res) => {
-    console.log("INSIDE POST CLASS IN SERVER")
-    console.log("REQ.BODY CONTAINS THE FOLLOWING: ", req.body)
+    // console.log("INSIDE POST CLASS IN SERVER")
+    // console.log("REQ.BODY CONTAINS THE FOLLOWING: ", req.body)
     const { title, date, starttime, endtime, repeat } = req.body;
     try {
 
@@ -166,14 +166,14 @@ app.post("/api/classes", async (req, res) => {
         //////////////////////////////////////////////////////////////
         // Convert the date string to a Date object
         const classDate = new Date(date);
-        console.log("CONVERTED DATE: ", classDate)
+        // console.log("CONVERTED DATE: ", classDate)
         // Check if date conversion was successful
         if (isNaN(classDate.getTime())) {
             return res.status(400).json({ error: 'Invalid date format' });
         }
         //////////////////////////////////////////////////////////////
 
-        console.log("USERID IS ", userId)
+        // console.log("USERID IS ", userId)
         let classItem;
         //////////////////////////////////////////////////////////////
         if (userId != ""){
@@ -390,7 +390,7 @@ const getStartAndEndOfNext7Days = () => {
     const endDate = new Date(today);
     endDate.setDate(today.getDate() + 6); // +6 days to cover a full week
 
-    console.log("Start date: ", startDate, "End date: ", endDate)
+    // console.log("Start date: ", startDate, "End date: ", endDate)
     return { startDate, endDate };
 };
 
@@ -430,7 +430,7 @@ async function generateSchedule(classes, deadlines) {
             
             ### **[Day of the week], [Month] [Day], [Year]**
                 - **[Start Time] - [End Time]**: Study Session
-                  - **To-Do List**: [Specific task for this session]
+                - **To-Do List**: [Specific task for the session]
 
             **Preferences:**
             - 5 study sessions every day with 4 sessions for daily work (lecture notes, lab work, tutorial work) and 1 session for assignment work
@@ -521,8 +521,8 @@ const parseSchedule = (originalText) => {
         });
     });
 
-    console.log("FINAL SCHEDULE")
-    console.log(JSON.stringify(finalSchedule, null, 2));
+    // console.log("FINAL SCHEDULE")
+    // console.log(JSON.stringify(finalSchedule, null, 2));
     return finalSchedule;
 };
 
@@ -536,12 +536,12 @@ app.post('/api/studyPlan', async (req, res) => {
         // }
 
         // console.log("PREFERENCES FOUND : ", preferences)
-        console.log("INSIDE STUDY PLAN API ENDPOINT")
+        // console.log("INSIDE STUDY PLAN API ENDPOINT")
         const { classes } = await getNext7DaysData();
         const deadlines = await Deadlines.find({ user: userId });
         
-        console.log("CLASSES FOUND : ", classes)
-        console.log("DEADLINES FOUND : ", deadlines)
+        // console.log("CLASSES FOUND : ", classes)
+        // console.log("DEADLINES FOUND : ", deadlines)
         
         const generatedSchedule = await generateSchedule(classes, deadlines);
         console.log("SCHEDULE GENERATED: ")
@@ -587,8 +587,8 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
     try {
         // Calculate the start and end dates of the current week
         const { startDate, endDate } = getStartAndEndOfNext7Days();
-        console.log("user id inside check-current-week is ", userId)
-        console.log("Start and end dates are : ", startDate, endDate)
+        // console.log("user id inside check-current-week is ", userId)
+        // console.log("Start and end dates are : ", startDate, endDate)
         // Fetch the study plans for the current week
         const schedule = await StudyPlan.find({
             user: userId,
@@ -617,28 +617,28 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
 // ----------------------- GENERATE QUIZ FROM NOTES ROUTE ---------------------------
 app.post("/api/notes", async (req, res) => {
     const { notes } = req.body;
-    console.log("NOTES IN POST NOTES METHOD: ", req.body)
+    // console.log("NOTES IN POST NOTES METHOD: ", req.body)
     try {
-        console.log("INSIDE POST NOTES")
+        // console.log("INSIDE POST NOTES")
         const notesItem = await Notes.create({ notes, user: userId });
         console.log("NEW NOTES POSTED");
 
         // Generate the quiz based on the notes
         const quizContent = await generateQuiz(notesItem.notes);
-        console.log("QUIZ HAS BEEN GENERATED. NEXT STEP: PARSE QUIZ")
-        console.log("QUIZ CONTENT: ")
-        console.log(quizContent)
+        // console.log("QUIZ HAS BEEN GENERATED. NEXT STEP: PARSE QUIZ")
+        // console.log("QUIZ CONTENT: ")
+        // console.log(quizContent)
 
         const questions = parseQuiz(quizContent);
 
-        console.log("QUESTIONS: ")
-        console.log(questions)
+        // console.log("QUESTIONS: ")
+        // console.log(questions)
 
-        console.log("notesItem._id: ", notesItem._id)
+        // console.log("notesItem._id: ", notesItem._id)
 
         // Save the quiz to the database
         const quiz = await quizdb.create({ user: userId, notes: notesItem._id, questions });
-        console.log("Quiz created successfully:", quiz);
+        // console.log("Quiz created successfully:", quiz);
 
         res.status(200).json({ notesItem, quiz });
     } catch (error) {
@@ -648,12 +648,12 @@ app.post("/api/notes", async (req, res) => {
 });
 
 const parseQuiz = (quiz) => {
-    console.log("INSIDE PARSE QUIZ")
-    console.log("QUIZ CONTENT TO PARSE: ", quiz);
+    // console.log("INSIDE PARSE QUIZ")
+    // console.log("QUIZ CONTENT TO PARSE: ", quiz);
 
     let quizItems = quiz.split(/\n\s*\n/);
-    console.log("QUIZ ITEMS")
-    console.log(quizItems);
+    // console.log("QUIZ ITEMS")
+    // console.log(quizItems);
 
     const questions = quizItems.map(item => {
         const questionMatch = item.match(/\*\*Question:\*\* (.+?)(?=\*\*Answer:\*\*)/s);
@@ -694,7 +694,7 @@ app.get("/api/quiz/:noteId", async (req, res) => {
 });
 
 async function generateQuiz(notes) {
-    console.log("Inside the generate quiz method")
+    // console.log("Inside the generate quiz method")
     const messages = [
         {
             role: "system", content: "You are a helpful assistant that generates quizzes from user notes. Your task is to convert the provided notes into quiz questions and answers."

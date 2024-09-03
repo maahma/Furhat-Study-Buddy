@@ -31,11 +31,12 @@ val EmotionRegulation: State = state(parent = Parent) {
     onResponse {
         val userResponse = it.text
 
-        furhat.gesture(LookingAway)
-        furhat.say({
-            +"Hmm"
-            +delay(2000)
-            +"let me think"})
+        val thinking = utterance {
+            +"Hmm,"
+            + LookingAway
+            +"Let me think"
+            + delay(9000)
+        }
 
         val followUpPrompt = """
             You are a supportive and empathetic well-being assistant engaging in a conversation with a student.  
@@ -45,6 +46,8 @@ val EmotionRegulation: State = state(parent = Parent) {
             Avoid starting your response with "just respond" or similar phrases, and avoid greeting the student every time you respond.
             Don't make the responses too long.
             """.trimIndent()
+
+        furhat.say(thinking)
 
 //        Ensure your response shows that you value the student's feelings and are here to support them, and provide actionable advice to help them navigate their emotions.
         val followUpResponse = openAISerenityAssistant.generatePromptResponse(followUpPrompt)
@@ -67,7 +70,9 @@ val EmotionRegulation: State = state(parent = Parent) {
     }
 
     onNoResponse {
-        furhat.say("It's okay if you don't want to talk right now. I'm here whenever you're ready.")
+        furhat.say("It's okay if you don't want to talk right now.")
+        furhat.gesture(Gestures.Smile)
+        furhat.say("I'll check in with you again")
         send(SPEECH_DONE)
     }
 }

@@ -2,6 +2,8 @@ package furhatos.app.furgui
 
 import furhatos.flow.kotlin.*
 import furhatos.app.furgui.flow.*
+import furhatos.app.furgui.gestures.LookingAway
+import furhatos.app.furgui.gestures.SlightNod
 import furhatos.records.User
 import furhatos.util.Language
 import furhatos.gestures.Gestures
@@ -13,7 +15,7 @@ val skippedQuestions = mutableListOf<QuestionData>()
 var inReviewSession = false
 
 val QuizState: State  = state(parent = Parent) {
-    onEntry {
+    onEntry{
         currentQuestionIndex = 0 // Reset the question index when starting the quiz
         furhat.say("I will quiz you on 20 questions. You can say 'skip' to skip a question and if you don't know the answer, you can say 'I don't know'. At the end, I will quiz you again on questions you got incorrect or skipped. You can say 'stop' anytime to stop the quiz.")
         reentry() // Start asking questions
@@ -23,7 +25,7 @@ val QuizState: State  = state(parent = Parent) {
         if (currentQuestionIndex < quizQuestions.size) {
             // Ask the current question
             val question = quizQuestions[currentQuestionIndex]
-            furhat.ask(question.questionText)
+            furhat.ask(question.questionText, endSil = 2000, maxSpeech = 30000)
         } else {
             // All questions have been asked
             if (skippedQuestions.isNotEmpty() || incorrectQuestions.isNotEmpty()) {
@@ -33,6 +35,12 @@ val QuizState: State  = state(parent = Parent) {
                 send(SPEECH_DONE) // Indicate the end of the quiz
             }
         }
+    }
+
+    // onInterimResponse handles interim speech results
+    onInterimResponse(endSil = 500) {
+        // Provide real-time feedback while the user is still speaking
+        furhat.gesture(SlightNod)
     }
 
     onResponse<Yes> {
@@ -87,6 +95,15 @@ val QuizState: State  = state(parent = Parent) {
             furhat.gesture(Gestures.Smile)
             furhat.say("That's correct!")
         } else {
+            val checking = utterance {
+                +"Hmm,"
+                + LookingAway
+                +"Let me check your answer"
+                + delay(4000)
+            }
+
+            furhat.say(checking)
+
             // Create an instance of OpenAIQuizAssistant to call the method
             val quizAssistant = OpenAIQuizAssistant()
 
@@ -95,7 +112,7 @@ val QuizState: State  = state(parent = Parent) {
 
             if (isClose) {
                 furhat.gesture(Gestures.Smile)
-                furhat.say("That's close enough!")
+                furhat.say("It's close enough!")
             } else {
                 furhat.gesture(Gestures.BrowFrown)
                 furhat.say("Sorry, you answered $userAnswer, but the correct answer is $correctAnswer.")

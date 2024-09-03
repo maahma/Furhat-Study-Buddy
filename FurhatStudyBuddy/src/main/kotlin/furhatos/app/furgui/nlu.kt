@@ -97,19 +97,3 @@ class StopSession : Intent() {
         )
     }
 }
-
-class TalkMore : Intent() {
-    override fun getExamples(lang: Language): List<String> {
-        return listOf(
-            "I want to talk more",
-            "let's talk more",
-            "can we keep talking",
-            "I need to talk more",
-            "let's continue talking",
-            "I want to discuss more",
-            "I have more to say",
-            "can we talk about this more",
-            "I'd like to talk more"
-        )
-    }
-}
