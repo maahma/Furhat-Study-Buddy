@@ -231,7 +231,7 @@ app.delete("/api/classes/:id", async (req, res) => {
 });
 
 // UPDATE A CLASS
-app.patch("/api/classes/:id", async (req, res) => {
+app.put("/api/classes/:id", async (req, res) => {
 
     const { id } = req.params;
     const { title, date, starttime, endtime, repeat } = req.body;
@@ -312,7 +312,7 @@ app.delete("/api/deadlines/:id", async (req, res) => {
 });
 
 // UPDATE A DEADLINE
-app.patch("/api/deadlines/:id", async (req, res) => {
+app.put("/api/deadlines/:id", async (req, res) => {
 
     const { id } = req.params;
     const { title, dueDate } = req.body;

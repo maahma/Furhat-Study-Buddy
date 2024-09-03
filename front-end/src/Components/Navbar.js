@@ -40,7 +40,7 @@ const Navbar = () => {
                         <ul>
                             <li className="home">
                                 <NavLink to="/">
-                                    <img className="home-image" src="/images/home.png" alt="home-image" />
+                                    <img className="home-image" src="/images/home.png" alt="home-image" title="Home" />
                                 </NavLink>
                             </li>
                             {
@@ -49,24 +49,24 @@ const Navbar = () => {
                                     
                                         <li className="dashboard">
                                             <NavLink to="/dashboard">
-                                                <img className="dashboard-image" src="/images/calendar.png" alt="dashboard-image" />
+                                                <img className="dashboard-image" src="/images/calendar.png" alt="dashboard-image" title="Dashboard" />
                                             </NavLink>
                                         </li>
 
                                         <li className="pomodoro">
                                             <NavLink to="/pomodoroFocus">
-                                                <img className="pomodoro-image" src="/images/pomodoro.png" alt="pomodoro-image" />
+                                                <img className="pomodoro-image" src="/images/pomodoro.png" alt="pomodoro-image" title="Schedule" />
                                             </NavLink>
                                         </li>
 
                                         <li className="quiz">
                                             <NavLink to="/quiz">
-                                                <img className="quiz-image" src="/images/quiz.png" alt="quiz-image" />
+                                                <img className="quiz-image" src="/images/quiz.png" alt="quiz-image" title="Quiz" />
                                             </NavLink>
                                         </li>
 
                                         <li className="logout" onClick={logout}>
-                                            <img className="logout-image" src="/images/logout.png" alt="logout-image" />
+                                            <img className="logout-image" src="/images/logout.png" alt="logout-image" title="Logout" />
                                         </li>
 
 
@@ -83,7 +83,7 @@ const Navbar = () => {
                                 )   : 
                                 <li>
                                     <NavLink to="/login">
-                                        <img className="login-image" src="/images/logout.png" alt="login-image" />
+                                        <img className="login-image" src="/images/logout.png" alt="login-image" title="Login"/>
                                     </NavLink>
                                 </li>
                             }

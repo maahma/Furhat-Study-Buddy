@@ -20,3 +20,14 @@
     margin: 15px 0px;
     cursor: pointer;
 }
+
+img{
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+button{
+    border: none;
+    background-color:#DBF6FD;
+}

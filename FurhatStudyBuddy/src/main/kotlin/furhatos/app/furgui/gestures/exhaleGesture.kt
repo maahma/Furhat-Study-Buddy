@@ -6,7 +6,7 @@ import furhatos.gestures.Gestures
 
 val ExhaleGesture = _defineGesture("ExhaleGesture") {
     // Mouth open to breathe out
-    frame(0.1, 3.1, persist = true){
+    frame(0.1, 3.7, persist = true){
         BasicParams.PHONE_AAH to 0.4
     }
 

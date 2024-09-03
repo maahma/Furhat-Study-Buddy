@@ -11,15 +11,11 @@ import furhatos.app.furgui.*
 val Greeting: State = state(Parent) {
     onEntry {
 
-        furhat.say("Hello there! Welcome to the Furhat Study Buddy application!")
+        furhat.say("Hello there! Welcome to RORY: Your Intelligent Study Companion!")
         furhat.gesture(Gestures.Smile)
 
         //////// JUST TESTING DELETE LATER
-        furhat.gesture(LookingAway)
-        furhat.say("Hmm")
-        //////// JUST TESTING DELETE LATER
-
-        //////// JUST TESTING DELETE LATER
+//        goto(GratitudeReflection)
 //        goto(EmotionRegulation)
         //////// JUST TESTING DELETE LATER
 
@@ -28,12 +24,12 @@ val Greeting: State = state(Parent) {
     }
 
     onResponse<Greeting> {
-        furhat.say("There’s so much you can do with this application. Head over to the Home Page to discover more.")
+        furhat.say("There’s so much you can do with this application. Check out the Home Page to discover more.")
         goto(Parent)
     }
 
     onNoResponse {
-        furhat.say("There’s so much you can do with this application. Head over to the Home Page to discover more.")
+        furhat.say("There’s so much you can do with this application. Check out the Home Page to discover more.")
         goto(Parent)
     }
 }

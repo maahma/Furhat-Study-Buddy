@@ -2,9 +2,10 @@ package furhatos.app.furgui.gestures
 
 import furhatos.gestures.BasicParams
 import furhatos.app.furgui.utils._defineGesture
+import furhatos.app.furgui.utils.getAudioURL
 import furhatos.gestures.Gestures
 
-val InhaleGesture = _defineGesture("InhaleGesture") {
+val InhaleGesture = _defineGesture("InhaleGesture",  audioURL = getAudioURL("inhaleSound.wav")) {
     // Closing the eyes
     frame(0.3, persist = true) {
         BasicParams.BLINK_RIGHT to 1.0

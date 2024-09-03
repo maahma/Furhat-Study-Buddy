@@ -14,9 +14,9 @@ fun getRandomInRange(startInterval: Double = 18.0, interval: Double = 3.0) = sta
 
 fun getAudioURL(path: String) : String {
     return if(isVirtual) {
-        "file:${File(".").canonicalPath + "/src/main/resources/sounds/"}$path"
+        "file:${File(".").canonicalPath + "/src/main/kotlin/furhatos/app/furgui/sounds/"}$path"
     } else {
-        "classpath:sounds/$path"
+        "classpath:../sounds/$path"
     }
 }
 
@@ -34,7 +34,6 @@ fun _defineGesture(name: String? = null,
     if(frameTimes != null) {
         gesture.frames.add(Frame(frameTimes, false, audioURL, texture, texture, ledPixel))
     }
-
 
     return gesture
 }

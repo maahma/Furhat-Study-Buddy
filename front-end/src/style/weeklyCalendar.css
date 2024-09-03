@@ -44,3 +44,8 @@
     margin: 15px 0px;
     cursor: pointer;
 }
+
+.class-buttons button{
+    border: none;
+    background-color: #E9E7FD;
+}

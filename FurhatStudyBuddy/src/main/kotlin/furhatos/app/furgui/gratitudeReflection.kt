@@ -2,39 +2,67 @@ package furhatos.app.furgui
 
 import furhatos.flow.kotlin.*
 import furhatos.app.furgui.flow.Parent
+import furhatos.app.furgui.gestures.LookingAway
+import furhatos.app.furgui.gestures.SlightNod
+import furhatos.gestures.Gestures
 import kotlinx.coroutines.runBlocking
 
 val GratitudeReflection: State = state(parent = Parent) {
 
     val openAISerenityAssistant = openAICalmingExercises()
-    var startTime: Long = 0
 
     onEntry{
-        startTime = System.currentTimeMillis()  // Start the timer
-        furhat.say("Let's take a moment to reflect on the positive things in your life. Gratitude can help us feel more at peace.")
-        reentry()
+        furhat.say("Taking a moment to reflect on the positive aspects of your life can really uplift your mood. Let's focus on something that brings you joy or makes you feel thankful.")
+        furhat.gesture(Gestures.Smile)
+        furhat.ask("Can you share one thing you're grateful for today? If you prefer to return to your study session, just say 'stop' and we'll switch back.", endSil = 2000, maxSpeech = 30000)
     }
 
-    onReentry {
-        val initialPrompt = "You're a helpful well-being assistant guiding students in reflecting on positive aspects of their life. Ask the user to share something they're grateful for and provide supportive feedback."
-        val response = openAISerenityAssistant.generatePromptResponse(initialPrompt)
-        furhat.say(response)
+    // onInterimResponse handles interim speech results
+    onInterimResponse(endSil = 500) {
+        // Provide real-time feedback while the user is still speaking
+        furhat.gesture(SlightNod)
+    }
+
+    onResponse<StopSession> {
+        furhat.say("It's okay if you don't want to talk right now! Let's get back to your study session. Remember, I'm here if you need me.")
+        send(SPEECH_DONE)
     }
 
     onResponse {
         val userResponse = it.text
-        val followUpPrompt = "The user expressed gratitude for: \"$userResponse\". Based on this, continue encouraging them to reflect on more positive aspects of their life."
+
+        furhat.gesture(LookingAway)
+        furhat.say("Hmm")
+
+        val followUpPrompt = """
+            You are a supportive and empathetic well-being assistant engaging in a conversation with a student.
+            The user said: "$userResponse".
+            Provide a caring and supportive response, reflecting on the user's gratitude and reinforcing the positive aspect they shared. Use phrases like "That's wonderful" or "I'm glad to hear that".
+            Avoid starting your response with "just respond" or similar phrases, avoid greeting the student every time you respond, and avoid saying [student's name] or similar phrases.
+            Ensure your response shows that you value the student's feelings and are here to support them.
+            """.trimIndent()
+
         val followUpResponse = openAISerenityAssistant.generatePromptResponse(followUpPrompt)
 
         furhat.say(followUpResponse)
+        furhat.gesture(Gestures.Smile)
 
-        // Check if 2 minutes have passed
-        val elapsedTime = System.currentTimeMillis() - startTime
-        if (elapsedTime > 2 * 60 * 1000) {  // Exit after 2 minutes
-            furhat.say("Thank you for sharing. Remember, practicing gratitude regularly can help you feel more positive and calm. Let's move on with your session.")
-            send(SPEECH_DONE)
-        } else {
-            reentry()
-        }
+        furhat.ask("", endSil = 2000, maxSpeech = 30000)
+    }
+
+    // onInterimResponse handles interim speech results
+    onInterimResponse(endSil = 500) {
+        // Provide real-time feedback while the user is still speaking
+        furhat.gesture(SlightNod)
+    }
+
+    onResponse<StopSession> {
+        furhat.say("It's okay if you don't want to talk right now! Let's get back to your study session. Remember, I'm here if you need me.")
+        send(SPEECH_DONE)
+    }
+
+    onNoResponse {
+        furhat.say("It's okay if you don't want to talk right now. I'm here whenever you're ready.")
+        send(SPEECH_DONE)
     }
 }

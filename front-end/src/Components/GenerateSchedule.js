@@ -110,7 +110,7 @@ function GenerateSchedule() {
         <div className="session-container">
             {error && <div className="error">{error}</div>}
             {!isScheduleGenerated && (
-                <button onClick={handleGenerateSchedule}>Generate Schedule</button>
+                <button className="generate-schedule" onClick={handleGenerateSchedule}>Generate Schedule</button>
             )}
             {isScheduleGenerated && schedule.length > 0 && (
                 <div>
