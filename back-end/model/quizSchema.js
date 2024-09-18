@@ -27,7 +27,5 @@ const quizSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 const quizdb = new mongoose.model("quiz", quizSchema);
-// const notesdb = Notes
 
-// export default { quizdb, notesdb };
 export default quizdb

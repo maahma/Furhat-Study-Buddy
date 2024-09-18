@@ -444,7 +444,7 @@ async function generateSchedule(classes, deadlines) {
             **Format:**
             - Only provide day, date, time, title of task, and to-do list for each study session.
             - Avoid using session titles like "Morning Session" or "Afternoon Session".
-            - List specific study hours for each day with date, avoiding overlap with classes and ensuring ensuring a buffer period of 30 minutes before and after each class to prevent scheduling study sessions too closely to class times.
+            - List specific study hours for each day with date, avoiding overlap with classes and ensuring a buffer period of 30 minutes before and after each class to prevent scheduling study sessions too closely to class times.
             - Do not schedule study sessions during class times.
             - Space study sessions evenly throughout the day, ensuring a mix of morning and afternoon sessions (e.g., 3 in the morning, 2 in the afternoon) to prevent burnout and maintain energy levels.
             - Include a to-do list for each study session, specifying tasks like reviewing lecture notes, lab work, tutorial work, and assignments. Ensure variety in the tasks to cover all necessary activities.
@@ -520,9 +520,6 @@ const parseSchedule = (originalText) => {
             sessions: sessionsData
         });
     });
-
-    // console.log("FINAL SCHEDULE")
-    // console.log(JSON.stringify(finalSchedule, null, 2));
     return finalSchedule;
 };
 
@@ -535,13 +532,8 @@ app.post('/api/studyPlan', async (req, res) => {
         //     return res.status(404).json({ message: "Preferences not found" });
         // }
 
-        // console.log("PREFERENCES FOUND : ", preferences)
-        // console.log("INSIDE STUDY PLAN API ENDPOINT")
         const { classes } = await getNext7DaysData();
         const deadlines = await Deadlines.find({ user: userId });
-        
-        // console.log("CLASSES FOUND : ", classes)
-        // console.log("DEADLINES FOUND : ", deadlines)
         
         const generatedSchedule = await generateSchedule(classes, deadlines);
         console.log("SCHEDULE GENERATED: ")
@@ -587,8 +579,7 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
     try {
         // Calculate the start and end dates of the current week
         const { startDate, endDate } = getStartAndEndOfNext7Days();
-        // console.log("user id inside check-current-week is ", userId)
-        // console.log("Start and end dates are : ", startDate, endDate)
+
         // Fetch the study plans for the current week
         const schedule = await StudyPlan.find({
             user: userId,
@@ -617,28 +608,16 @@ app.get("/api/studyPlan/check-current-week", async (req, res) => {
 // ----------------------- GENERATE QUIZ FROM NOTES ROUTE ---------------------------
 app.post("/api/notes", async (req, res) => {
     const { notes } = req.body;
-    // console.log("NOTES IN POST NOTES METHOD: ", req.body)
     try {
-        // console.log("INSIDE POST NOTES")
         const notesItem = await Notes.create({ notes, user: userId });
         console.log("NEW NOTES POSTED");
 
         // Generate the quiz based on the notes
         const quizContent = await generateQuiz(notesItem.notes);
-        // console.log("QUIZ HAS BEEN GENERATED. NEXT STEP: PARSE QUIZ")
-        // console.log("QUIZ CONTENT: ")
-        // console.log(quizContent)
-
         const questions = parseQuiz(quizContent);
-
-        // console.log("QUESTIONS: ")
-        // console.log(questions)
-
-        // console.log("notesItem._id: ", notesItem._id)
 
         // Save the quiz to the database
         const quiz = await quizdb.create({ user: userId, notes: notesItem._id, questions });
-        // console.log("Quiz created successfully:", quiz);
 
         res.status(200).json({ notesItem, quiz });
     } catch (error) {
@@ -648,13 +627,9 @@ app.post("/api/notes", async (req, res) => {
 });
 
 const parseQuiz = (quiz) => {
-    // console.log("INSIDE PARSE QUIZ")
-    // console.log("QUIZ CONTENT TO PARSE: ", quiz);
-
+   
     let quizItems = quiz.split(/\n\s*\n/);
-    // console.log("QUIZ ITEMS")
-    // console.log(quizItems);
-
+   
     const questions = quizItems.map(item => {
         const questionMatch = item.match(/\*\*Question:\*\* (.+?)(?=\*\*Answer:\*\*)/s);
         const answerMatch = item.match(/\*\*Answer:\*\* (.+)/s);
@@ -694,7 +669,6 @@ app.get("/api/quiz/:noteId", async (req, res) => {
 });
 
 async function generateQuiz(notes) {
-    // console.log("Inside the generate quiz method")
     const messages = [
         {
             role: "system", content: "You are a helpful assistant that generates quizzes from user notes. Your task is to convert the provided notes into quiz questions and answers."

@@ -20,6 +20,7 @@ val EmotionRegulation: State = state(parent = Parent) {
     // onInterimResponse handles interim speech results
     onInterimResponse(endSil = 500) {
         // Provide real-time feedback while the user is still speaking
+        furhat.gesture(Gestures.Smile)
         furhat.gesture(SlightNod)
     }
 
@@ -31,13 +32,6 @@ val EmotionRegulation: State = state(parent = Parent) {
     onResponse {
         val userResponse = it.text
 
-        val thinking = utterance {
-            +"Hmm,"
-            + LookingAway
-            +"Let me think"
-            + delay(9000)
-        }
-
         val followUpPrompt = """
             You are a supportive and empathetic well-being assistant engaging in a conversation with a student.  
             The user said: "$userResponse". 
@@ -47,10 +41,21 @@ val EmotionRegulation: State = state(parent = Parent) {
             Don't make the responses too long.
             """.trimIndent()
 
-        furhat.say(thinking)
+//        val thinking = utterance {
+//            +"Hmm,"
+//            + LookingAway
+//            +"Let me think"
+//        }
+//
+//        furhat.say(thinking)
+
+        furhat.say("Hmm")
+        furhat.gesture(GazeAversion(4.0), async=true)
 
 //        Ensure your response shows that you value the student's feelings and are here to support them, and provide actionable advice to help them navigate their emotions.
         val followUpResponse = openAISerenityAssistant.generatePromptResponse(followUpPrompt)
+
+        furhat.gesture(GazeAversion(2.0))
 
         furhat.say(followUpResponse)
         furhat.gesture(Gestures.Smile)

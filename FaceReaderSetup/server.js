@@ -36,7 +36,6 @@ io.on('connection', (socket) => {
     });
 });
 
-
 // Function to format XML command
 const formatXMLCommand = (typeName, xmlMessage) => {
     let xmlMessageBytes = Buffer.from(xmlMessage, 'utf8');
@@ -79,7 +78,6 @@ const interventionThreshold = 5; // threshold for stress score
 const pauseDuration = 3 * 60 * 1000; // 3 minutes in milliseconds
 
 const processEmotionFrame = (jsonData) => {
-    // const jsonData = JSON.parse(jsonData);
 
     const state = jsonData?.Classification?.ClassificationValues?.ClassificationValue?.State?.string;
     const analysisStartTime = jsonData?.Classification?.AnalysisStartTime;
@@ -133,8 +131,6 @@ const sendXMLCommandToFaceReader = (typeName, xmlCommand, onData) => {
 
         client.on('data', async (data) => {
             const receivedData = data.toString();
-            // console.log("Received data from FaceReader")
-            // console.log(receivedData)
 
             if (onData) {
                 onData(receivedData);
@@ -172,7 +168,6 @@ app.post('/startAnalyzing', async (req, res) => {
     try {
         await sendXMLCommandToFaceReader(actionTypeName, startAnalyzingCommandXML);
         await sendXMLCommandToFaceReader(actionTypeName, startReceivingDetailedLogs, (xmlLogs) => {
-            // console.log('Detailed log received:', xmlLogs);
             const json = convertXMLToJSON(xmlLogs);
             console.log(processEmotionFrame(json));
         });
@@ -206,10 +201,6 @@ app.post('/stopAnalyzing', async (req, res) => {
         res.status(500).send('Error stopping FaceReader: ' + error.message);
     }
 });
-
-// app.listen(PORT, () => {
-//     console.log(`Node.js server running on port ${PORT}`);
-// });
 
 server.listen(PORT, () => {
     console.log(`Node.js server running on port ${PORT}`);

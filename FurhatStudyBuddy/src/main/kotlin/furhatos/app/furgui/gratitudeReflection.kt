@@ -31,12 +31,13 @@ val GratitudeReflection: State = state(parent = Parent) {
     onResponse {
         val userResponse = it.text
 
-        val thinking = utterance {
-            +"Hmm,"
-            + LookingAway
-            +"Let me think"
-            + delay(9000)
-        }
+//        val thinking = utterance {
+//            +"Hmm,"
+//            + LookingAway
+//            +"Let me think"
+//            + delay(9000)
+//        }
+
 
         val followUpPrompt = """
             You are a supportive and empathetic well-being assistant engaging in a conversation with a student.
@@ -46,9 +47,14 @@ val GratitudeReflection: State = state(parent = Parent) {
             Ensure your response shows that you value the student's feelings and are here to support them.
             """.trimIndent()
 
-        furhat.say(thinking)
+//        furhat.say(thinking)
+
+        furhat.say("Hmm")
+        furhat.gesture(GazeAversion(4.0), async=true)
 
         val followUpResponse = openAISerenityAssistant.generatePromptResponse(followUpPrompt)
+
+        furhat.gesture(GazeAversion(2.0))
 
         furhat.say(followUpResponse)
         furhat.gesture(Gestures.Smile)

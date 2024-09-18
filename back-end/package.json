@@ -5,7 +5,7 @@
   "main": "App.js",
   "type": "module",
   "scripts": {
-    "test": "NODE_ENV=testing mocha --recursive --exit --timeout 10000"
+    "test": "NODE_ENV=testing mocha 'tests/**/*.js' --recursive --exit --timeout 10000"
   },
   "keywords": [],
   "author": "",

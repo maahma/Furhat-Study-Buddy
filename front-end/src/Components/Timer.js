@@ -53,7 +53,6 @@ function PomodoroTimer({ task, isActive, onTimerEnd }) {
         // Listen for events from the WebSocket server
         socket.on('furhatEvent', (data) => {
             console.log('Received event from server:', data.message);
-            console.log("SEND EVENT TO FURHAT FROM TIMER COMPONENT")
             if (furhatConnected && furhat) {
                 furhat.send({
                     event_name: 'CalmingActivity'

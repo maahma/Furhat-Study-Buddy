@@ -24,7 +24,7 @@ val Greeting: State = state(Parent) {
 //        }
 //
 //        furhat.say(checking)
-//        goto(GratitudeReflection)
+//        goto(CalmingActivity)
 //        goto(EmotionRegulation)
         //////// JUST TESTING DELETE LATER
 

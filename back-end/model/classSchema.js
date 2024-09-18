@@ -7,7 +7,7 @@ const classSchema = new mongoose.Schema({
     },
     
     date: {
-        type: Date,  // Use Date type to store the specific date
+        type: Date,  
         required: true
     },
 

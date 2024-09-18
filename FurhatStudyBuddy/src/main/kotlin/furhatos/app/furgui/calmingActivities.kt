@@ -27,6 +27,7 @@ val CalmingActivity: State = state(parent = Parent) {
 
 
     onEntry {
+        furhat.say("You seem a little stressed")
         furhat.ask("Would you like to do a calming activity together?")
     }
 
@@ -37,8 +38,8 @@ val CalmingActivity: State = state(parent = Parent) {
 
         when (activity) {
             0 -> goto(BreathingExerciseState)
-            1 -> goto(EmotionRegulation)
-            2 -> goto(GratitudeReflection)
+            1 -> goto(GratitudeReflection)
+            2 -> goto(EmotionRegulation)
         }
 
         furhat.say("I hope you feel more relaxed now.")
