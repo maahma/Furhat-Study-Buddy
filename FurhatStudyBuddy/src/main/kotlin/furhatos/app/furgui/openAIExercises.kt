@@ -6,7 +6,7 @@ import com.theokanning.openai.completion.CompletionResult
 import kotlinx.coroutines.runBlocking
 
 /** API Key to GPT-3 language model. **/
-private const val SERVICE_KEY = "sk-proj-VYIxHp0hXLyGI0em6QtHT3BlbkFJ1cT2GutDATNftb0juocs"
+private const val SERVICE_KEY = <secret key>
 
 private val service = OpenAiService(SERVICE_KEY)
 
