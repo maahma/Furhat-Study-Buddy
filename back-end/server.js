@@ -30,7 +30,7 @@ app.use(express.json());
 
 // SETUP SESSION
 app.use(session({
-    secret: "furhatapp1234567890",
+    secret: <secret key>,
     resave: false,
     saveUninitialized: true,
     cookie: {
