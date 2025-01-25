@@ -1,5 +1,5 @@
 # Furhat-Study-Buddy
-
+Read about the project on my [blog](https://maahma.github.io/maahma-portfolio/project/social_robot)
 ## Setting up the MERN Application
 ### Prerequisites
 #### Installing Node.js and npm
