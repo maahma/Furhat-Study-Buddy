@@ -1,5 +1,121 @@
 # Furhat-Study-Buddy
 Read about the project on my [blog](https://maahma.github.io/maahma-portfolio/project/social_robot)
+
+## About the Project
+This project was developed as part of my Master’s dissertation, where I was tasked with creating a skill for the Furhat Robot. The requirement was open-ended—as long as the robot was used effectively, the skill could serve any purpose.
+
+I began by exploring previous student projects, which included Furhat being used as a receptionist or a language learning assistant. Inspired by these ideas, I wanted to build something personally meaningful and practically useful for students like myself. That’s when I came up with the idea of designing Furhat as a Study Buddy—a robot that could support learning, help manage study stress, and enhance productivity through interactive sessions.
+
+I'll explain the system architecture first to introduce the components used in this project
+
+## System Architecture
+The architecture of this project revolves around three core components:
+1) <b>MERN Application</b>
+    - The web application is built using the MERN stack:
+        - MongoDB for the database
+        - Express.js for the backend framework
+        - React for the front-end UI
+        - Node.js as the runtime environment
+    - The application interfaces with both the Furhat robot and the FaceReader software to manage data flow and interactions.
+2) <b>Furhat Robot</b>
+    - Furhat is a back-projected social robot developed by Furhat Robotics in Sweden. It allows facial customization (e.g., eye size, gender, skin tone) and features:
+        - Realistic face movements via animated projection
+        - Natural gestures (nodding, eyebrow movement)
+        - Sophisticated head motion platform
+        - Onboard audio and visual sensors
+        - Ample processing power and standard I/O ports
+    - It communicates with the MERN application to handle human-robot interactions.
+3) <b>FaceReader Software</b>
+    - FaceReader by Noldus is a commercial software that detects and classifies facial expressions into basic emotional categories: happy, sad, angry, surprised, scared, disgusted, and neutral. It operates in three main steps:
+      - **Face Finding**: Uses deep learning to locate faces in images
+      - **Face Modelling**: Builds a 3D facial model with 468 key points and compresses it using PCA.
+      - **Face Classification**: Classifies expressions using a trained deep neural network, providing intensity values between 0 (absent) and 1 (fully present). It also calculates valence (positive/negative emotional state).
+    - It sends emotional data to, and receives requests from, the MERN application to inform emotional analysis and well-being activities.
+
+- At high level, the interaction between the 3 components looks like this: <br>
+![high-level-design](https://github.com/user-attachments/assets/19153cb6-a5de-445b-a574-e09fb7e0a074)
+
+
+## What the project does
+This project turns the Furhat Robot into a smart and empathetic Study Buddy designed to help students stay on track with their academics and mental well-being.
+1) **📆 Smart Study Schedule with Well-being Monitoring**
+- Users can input their class schedules and assignment deadlines into the web application. The system then generates a personalized study schedule with allocated 60-minute study slots using OpenAI Chat Completions API. Each session comes with a built-in Pomodoro timer, and starting it also launches FaceReader, which analyzes the student’s facial expressions in real time.
+- If negative emotions like sadness, anger, or fear are detected 5 times, the system triggers the Furhat Robot to guide the user through calming activities such as:
+    - Deep breathing
+    - Emotion regulation
+    - Gratitude reflection
+
+2) **🧠 AI-Generated Quiz from Study Notes**
+- Users can input their study notes, and the app generates a 20-question quiz using OpenAI Chat Completions API. The Furhat Robot then:
+    - Asks the quiz questions aloud
+    - Tracks which answers the user got wrong
+    - Re-quizzes the user on incorrect answers to reinforce learning
+ 
+
+## Requirements 
+- I divided the functional requirements into two parts:
+    - those for students
+    - and those for well-being advisors
+- These requirements were prioritised using the MoSCoW technique (Must Have, Should Have, Could Have, Won't Have) technique
+- All requirements designated as "Must Have" have been successfully implemented to ensure the delivery of a minimum viable product within the specied time frame.
+  
+| Priority     | Requirement | Acceptance Criteria |
+|--------------|-------------|---------------------|
+| Must Have | The application must allow students to create an account using a university or personal email. | - Students can securely create an account using a valid email address |
+| Must Have | The application must allow students to input their class timetable and deadlines to generate a personalised study schedule | - The application allows users to perform CRUD operations for deadlines and classes <br> - The personalised study schedule is generated using OpenAI LLM <br> - The schedule accommodates varying class times and deadlines |
+| Must Have | The application must create a study schedule that includes breaks for meals and other activities | - Predefined breaks for meals and relaxation are included <br> - Breaks are incorporated into the OpenAI LLM prompt |
+| Must Have | The application must break down tasks into smaller chunks and create a to-do list | - A task is generated for each study session <br> - The OpenAI prompt includes task breakdown instructions |
+| Must Have | The application must start a timer for each study session | - A timer is linked to each session <br> - The timer can be started, stopped, and reset |
+| Must Have | The application must monitor the student’s mood during tasks to recognize distress | - Facial emotion recognition software analyses expressions <br> - Detects distress signals <br> - Mood data is continuously monitored |
+| Must Have | The application must suggest taking a break and provide motivational support if the student appears distressed | - Furhat receives mood data <br> - Suggests a break and performs calming activities |
+| Must Have | The application must allow students to input their notes and automatically create flashcards | - Users input notes via interface <br> - “Quiz Me” button generates quizzes <br> - OpenAI LLM creates questions/answers <br> - Users can view notes and be quizzed on them |
+| Must Have | The Furhat robot must quiz students using flashcards | - Quiz questions are sent to Furhat <br> - A Furhat skill handles asking and receiving answers |
+| Must Have | The Furhat robot must provide feedback on quiz answers | - Answers are compared to correct ones <br> - Immediate feedback is provided <br> - Incorrect answers can be reviewed and retried |
+| Should Have | The application should allow students to set their preferred start and end times for the day | - Input start/end times via interface <br> - Supports 24-hour or AM/PM format <br> - Validates time inputs <br> - Times are passed to OpenAI LLM |
+| Should Have | The application should allow students to specify the number of hours they wish to study each day | - Users specify study hours via input/slider <br> - Hours are passed to OpenAI LLM |
+| Should Have | The application should send reminders for students to check off tasks from their to-do list | - Tasks tracked and reminders sent <br> - Users can check off tasks <br> - Status updates in real-time |
+| Could Have | The application could allow students to customise the Furhat robot's voice, appearance, or interface | - Settings page for customisation <br> - Changes apply immediately |
+| Could Have | The application could allow students to type their responses if Furhat doesn't recognize spoken input | - Text input during quiz interactions <br> - Both spoken and typed inputs are accepted |
+| Could Have | The application could provide a dashboard for well-being advisors to monitor student progress and engagement | - Dashboard displays completed tasks, study hours, and engagement |
+| Could Have | The application could allow well-being advisors to customise motivational messages and relaxation techniques | - Advisors can update prompts via a settings panel |
+| Won’t Have | The application will not engage in conversations with students at risk of burnout in the current iteration | - Provides manual or OpenAI prompt for supportive dialogues <br> - Furhat guides students to contact advisors |
+| Won’t Have | The application will not include scheduled wellness check-ins via Furhat in the current iteration | - Furhat asks about stress, challenges, well-being <br> - Customizable check-in questions <br> - Responses accessible to advisors |
+
+## OpenAI Prompt Engineering
+
+
+## Sprints Breakdown
+1) **Sprint 1**
+    - Set up the MERN application's server
+    - Configure and establish the MongoDB database
+    - Connect the front end to the back end
+    - Implement basic CRUD functionalities for classes and deadlines
+    - Apply initial styling to the user interface
+2) **Sprint 2**
+    - Develop a study session and quiz generator using OpenAI's LLM
+    - Begin integration with the Furhat robot
+    - Address connectivity issues between the MERN app and Furhat
+3) **Sprint 3**
+    - Integrate the MERN application with FaceReader software
+    - Continue resolving Furhat connectivity
+    - Develop a Furhat skill to quiz users on their study notes
+4) **Sprint 4**
+    - Analyze facial expressions using FaceReader
+    - Trigger Furhat to perform calming activities
+    - Conduct functional testing for CRUD operations and system interactions
+
+- I used the following GANTT Chart (not the full chart shown here) to keep a track of the Sprints:<br>
+
+  ![gantt-chart](https://github.com/user-attachments/assets/f9973230-f8b6-4103-9ff6-ff873585117f)
+
+
+## Project File Structure
+- The project is divided into four main folders:
+    1) ```front-end``` folder has ```App.js``` which is the entry point for the React application, and sets up routing and integrates UI components
+    2) ```back-end``` folder has ```server.js``` which initializes the Node.js server, connects to MongoDB, handles API requests and manages authentication and CRUD operations
+    3) ```FaceReaderSetup``` folder has ```server.js``` which hosts a Node.js server that communicates with FaceReader via TCP/IP. It starts/stops emotion recognition, processes emotional data and triggers responses in the MERN application
+    4) ```FurhatStudyBuddy``` folder has ```main.kt``` which is the entry point for the Furhat skill. It sets up the Furhat environment for the real robot or SDK mode. It manages dialogue flows and integration with the MERN application
+
 ## Setting up the MERN Application
 ### Prerequisites
 #### Installing Node.js and npm
