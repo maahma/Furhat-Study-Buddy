@@ -1,5 +1,4 @@
 # Furhat-Study-Buddy
-Read about the project on my [blog](https://maahma.github.io/maahma-portfolio/project/social_robot)
 
 ## About the Project
 This project was developed as part of my Master’s dissertation, where I was tasked with creating a skill for the Furhat Robot. The requirement was open-ended—as long as the robot was used effectively, the skill could serve any purpose.
@@ -32,7 +31,9 @@ The architecture of this project revolves around three core components:
       - **Face Classification**: Classifies expressions using a trained deep neural network, providing intensity values between 0 (absent) and 1 (fully present). It also calculates valence (positive/negative emotional state).
     - It sends emotional data to, and receives requests from, the MERN application to inform emotional analysis and well-being activities.
 
-- At high level, the interaction between the 3 components looks like this: <br>
+At high level, the interaction between the 3 components looks like this: 
+<br>
+
 ![high-level-design](https://github.com/user-attachments/assets/19153cb6-a5de-445b-a574-e09fb7e0a074)
 
 
@@ -53,11 +54,10 @@ This project turns the Furhat Robot into a smart and empathetic Study Buddy desi
  
 
 ## Requirements 
-- I divided the functional requirements into two parts:
+I divided the functional requirements into two parts:
     - those for students
     - and those for well-being advisors
-- These requirements were prioritised using the MoSCoW technique (Must Have, Should Have, Could Have, Won't Have) technique
-- All requirements designated as "Must Have" have been successfully implemented to ensure the delivery of a minimum viable product within the specied time frame.
+These requirements were prioritised using the MoSCoW technique (Must Have, Should Have, Could Have, Won't Have) technique. All requirements designated as "Must Have" have been successfully implemented to ensure the delivery of a minimum viable product within the specied time frame.
   
 | Priority     | Requirement | Acceptance Criteria |
 |--------------|-------------|---------------------|
@@ -81,8 +81,35 @@ This project turns the Furhat Robot into a smart and empathetic Study Buddy desi
 | Won’t Have | The application will not engage in conversations with students at risk of burnout in the current iteration | - Provides manual or OpenAI prompt for supportive dialogues <br> - Furhat guides students to contact advisors |
 | Won’t Have | The application will not include scheduled wellness check-ins via Furhat in the current iteration | - Furhat asks about stress, challenges, well-being <br> - Customizable check-in questions <br> - Responses accessible to advisors |
 
-## OpenAI Prompt Engineering
+## Using OpenAI's Chat Completions API
+For conversational purposes, OpenAI offers the Chat Completions API, which is optimized for generating interactive and natural-sounding text using GPT models. This API is a part of OpenAI's broader text generation capabilities, where user inputs are referred to as prompts. **_Prompt engineering_** is an emerging field focused on crafting effective prompts to use the full potential of large language models across various tasks and domains. It helps users understand both the strengths and limitations of these models <br>
 
+According to OpenAI’s API documentation, six core strategies can improve the quality of results:
+- Writing clear instructions by being specific about output length, format, and examples
+- Providing reference text and citations to guide the model
+- Breaking down complex tasks into simpler components and summarizing long texts
+- Giving the model time to think and reviewing previous outputs
+- Using tools like text retrieval and code execution for better results
+- Testing changes systematically to measure the impact of prompt changes
+<br>
+
+In this application, the Chat Completions API was used to:
+- Generate personalized study schedules based on user inputs
+- Create quiz questions from user notes
+- Provide contextual, emotionally-aware responses through the Furhat Robot during calming activities
+<br>
+
+An example of prompt engineering used in this project is the prompt created to generate a personalized study schedule:
+<br>
+
+![final-prompt](https://github.com/user-attachments/assets/ad9ad17e-a06b-4fd1-8a61-d38cd8eec140)
+
+It takes a list of class schedules and upcoming deadlines as input and constructs a series of structured messages. These messages:
+- Define the assistant's role as a study scheduler
+- Include detailed instructions and preferences such as study hours, class days, and subject priorities
+- Ensure the model aligns the schedule with the user’s upcoming deadlines
+
+This approach allows the assistant to simulate thoughtful planning and return a tailored study plan that considers workload distribution, rest periods, and academic priorities.
 
 ## Sprints Breakdown
 1) **Sprint 1**
@@ -104,9 +131,10 @@ This project turns the Furhat Robot into a smart and empathetic Study Buddy desi
     - Trigger Furhat to perform calming activities
     - Conduct functional testing for CRUD operations and system interactions
 
-- I used the following GANTT Chart (not the full chart shown here) to keep a track of the Sprints:<br>
+I used the following GANTT Chart (not the full chart shown here) to keep a track of the Sprints:
+<br>
 
-  ![gantt-chart](https://github.com/user-attachments/assets/f9973230-f8b6-4103-9ff6-ff873585117f)
+![gantt-chart](https://github.com/user-attachments/assets/f9973230-f8b6-4103-9ff6-ff873585117f)
 
 
 ## Project File Structure
