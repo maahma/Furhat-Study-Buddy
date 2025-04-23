@@ -1,9 +1,9 @@
-# Furhat-Study-Buddy
+# Furhat Study Buddy
 
 ## About the Project
 This project was developed as part of my Master’s dissertation, where I was tasked with creating a skill for the Furhat Robot. The requirement was open-ended—as long as the robot was used effectively, the skill could serve any purpose.
 
-I began by exploring previous student projects, which included Furhat being used as a receptionist or a language learning assistant. Inspired by these ideas, I wanted to build something personally meaningful and practically useful for students like myself. That’s when I came up with the idea of designing Furhat as a Study Buddy—a robot that could support learning, help manage study stress, and enhance productivity through interactive sessions.
+I began by exploring previous student projects, which included Furhat being used as a receptionist or a language learning assistant. Inspired by these ideas, I wanted to build something personally meaningful and practically useful for students like myself. That’s when I came up with the idea of designing Furhat as a Study Buddy—a robot that could support learning, help manage study stress, and enhance productivity through interactive sessions. Watch a video of the project on my [blog](https://maahma.github.io/maahma-portfolio/project/social_robot)
 
 I'll explain the system architecture first to introduce the components used in this project
 
@@ -138,11 +138,11 @@ I used the following GANTT Chart (not the full chart shown here) to keep a track
 
 
 ## Project File Structure
-- The project is divided into four main folders:
-    1) ```front-end``` folder has ```App.js``` which is the entry point for the React application, and sets up routing and integrates UI components
-    2) ```back-end``` folder has ```server.js``` which initializes the Node.js server, connects to MongoDB, handles API requests and manages authentication and CRUD operations
-    3) ```FaceReaderSetup``` folder has ```server.js``` which hosts a Node.js server that communicates with FaceReader via TCP/IP. It starts/stops emotion recognition, processes emotional data and triggers responses in the MERN application
-    4) ```FurhatStudyBuddy``` folder has ```main.kt``` which is the entry point for the Furhat skill. It sets up the Furhat environment for the real robot or SDK mode. It manages dialogue flows and integration with the MERN application
+The project is divided into four main folders:
+1) ```front-end``` folder has ```App.js``` which is the entry point for the React application, and sets up routing and integrates UI components
+2) ```back-end``` folder has ```server.js``` which initializes the Node.js server, connects to MongoDB, handles API requests and manages authentication and CRUD operations
+3) ```FaceReaderSetup``` folder has ```server.js``` which hosts a Node.js server that communicates with FaceReader via TCP/IP. It starts/stops emotion recognition, processes emotional data and triggers responses in the MERN application
+4) ```FurhatStudyBuddy``` folder has ```main.kt``` which is the entry point for the Furhat skill. It sets up the Furhat environment for the real robot or SDK mode. It manages dialogue flows and integration with the MERN application
 
 ## Setting up the MERN Application
 ### Prerequisites
