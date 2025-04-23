@@ -16,7 +16,7 @@ The architecture of this project revolves around three core components:
         - React for the front-end UI
         - Node.js as the runtime environment
     - The application interfaces with both the Furhat robot and the FaceReader software to manage data flow and interactions.
-2) <b>Furhat Robot</b>
+2) <b>[Furhat Robot](https://www.furhatrobotics.com/)</b>
     - Furhat is a back-projected social robot developed by Furhat Robotics in Sweden. It allows facial customization (e.g., eye size, gender, skin tone) and features:
         - Realistic face movements via animated projection
         - Natural gestures (nodding, eyebrow movement)
@@ -24,7 +24,7 @@ The architecture of this project revolves around three core components:
         - Onboard audio and visual sensors
         - Ample processing power and standard I/O ports
     - It communicates with the MERN application to handle human-robot interactions.
-3) <b>FaceReader Software</b>
+3) <b>[FaceReader Software](https://noldus.com/facereader)</b>
     - FaceReader by Noldus is a commercial software that detects and classifies facial expressions into basic emotional categories: happy, sad, angry, surprised, scared, disgusted, and neutral. It operates in three main steps:
       - **Face Finding**: Uses deep learning to locate faces in images
       - **Face Modelling**: Builds a 3D facial model with 468 key points and compresses it using PCA.
